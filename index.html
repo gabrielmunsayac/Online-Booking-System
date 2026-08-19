@@ -1,0 +1,1733 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>EAScinema</title>
+    <style>
+      :root {
+        --o: #ff7900;
+        --b: #111217;
+        --g: #f5f5f6;
+        --x: #2674c9;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--g);
+        font: 15px Arial;
+        color: #222;
+      }
+      button,
+      input,
+      select {
+        font: inherit;
+      }
+      button {
+        cursor: pointer;
+        border: 0;
+      }
+      .top {
+        background: var(--b);
+        border-bottom: 4px solid var(--o);
+      }
+      nav,
+      .sub,
+      .wrap {
+        max-width: 1200px;
+        margin: auto;
+        padding-left: 22px;
+        padding-right: 22px;
+      }
+      nav {
+        height: 76px;
+        display: flex;
+        align-items: center;
+        gap: 30px;
+        position: relative;
+      }
+      .logo {
+        color: #fff;
+        display: grid;
+        grid-template-columns: auto auto;
+        align-items: baseline;
+        column-gap: 2px;
+        width: fit-content;
+        font-size: 27px;
+        font-weight: 900;
+        letter-spacing: -1px;
+        line-height: 0.85;
+        text-transform: uppercase;
+      }
+      .logo small {
+        grid-column: 1 / -1;
+        color: #bcbec5;
+        font-size: 8px;
+        font-weight: 700;
+        letter-spacing: 2px;
+        line-height: 1;
+        margin-bottom: 4px;
+      }
+      .logo b,
+      .links button:hover {
+        color: var(--o);
+      }
+      .links {
+        display: flex;
+        gap: 22px;
+        flex: 1;
+      }
+      .mobile-toggle { display:none; background:transparent; border:0; color:#fff; font-size:22px; width:44px; height:44px; border-radius:8px; }
+      .mobile-toggle svg { color:#fff; }
+      .mobile-toggle:focus { outline:2px solid #fff3; border-radius:8px; }
+      @media (max-width: 760px) {
+        .mobile-toggle { display: inline-grid; }
+      }
+      .mobile-menu { display:none; position:fixed; top:62px; left:8px; right:8px; z-index:70; background:#fff; border-radius:10px; box-shadow:0 18px 50px #0006; padding:8px; border:1px solid #e7e9ee; transform:translateY(-6px); opacity:0; }
+      .mobile-menu button { display:block; width:100%; padding:12px 14px; text-align:left; background:transparent; border:0; font-weight:800; color:#222; border-radius:8px; }
+      .mobile-menu button:hover { background:#fff7ef; }
+      .mobile-menu .nav-row { display:flex; gap:8px; }
+      .mobile-menu .small-note { font-size:12px; color:#6b7178; padding:6px 12px; }
+      .mobile-menu { transition: transform .22s ease, opacity .22s ease; transform-origin: top center; }
+      .mobile-menu.open { transform:translateY(0); opacity:1; }
+      .backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 66; display: none; }
+      .cta { display:inline-flex; align-items:center; gap:8px; }
+      .cta .cta-icon { display:inline-grid; place-items:center; width:18px; height:18px; }
+      /* header order on small screens: group controls to the right */
+      @media (max-width: 760px) {
+        .logo { order: 1; }
+        .links { order: 2; }
+        .cta { order: 3; }
+        /* order controls: avatar, notification, hamburger (left-to-right grouping) */
+        /* push the control group to the right and keep them together */
+        .notification-wrap { order: 4; margin-left:auto; margin-right:6px; }
+        .avatar-wrap { order: 5; margin-left:6px; margin-right:4px; }
+        .mobile-toggle { order: 6; margin-left:6px; margin-right:4px; }
+        nav { gap: 10px; align-items: center; }
+        .notification-wrap, .avatar-wrap, .mobile-toggle { display:inline-flex; }
+      }
+      /* compact admin on small screens */
+      @media (max-width: 760px) {
+        .admin-shell { grid-template-columns: 1fr; gap:12px; }
+        .admin-nav { padding:8px; border-radius:10px; display:flex; gap:8px; overflow:auto; }
+        .admin-nav button { padding:8px 10px; font-size:13px; white-space:nowrap; }
+        .admin-page-head h2 { font-size:18px; }
+        .stat { padding:12px; min-height:80px; }
+        .overview-panels { grid-template-columns:1fr; }
+        #admin .table th, #admin .table td { padding:8px; font-size:13px; }
+      }
+      @media (max-width: 420px) {
+        .admin-nav button { padding:7px 9px; font-size:12px; }
+        .admin-page-head h2 { font-size:16px; }
+        .mobile-menu { top:58px; left:6px; right:6px; }
+        .notification-menu { top:58px; left:6px; right:6px; width:auto; }
+      }
+      /* make hamburger dropdown a compact adjacent menu on small screens */
+      @media (max-width: 760px) {
+        .mobile-menu { position: absolute; right: 120px; top: 64px; left: auto; width: min(260px, calc(100vw - 140px)); z-index:78; transform: translateY(-6px); opacity:0; }
+        .mobile-menu.open { transform: translateY(0); opacity:1; }
+      }
+      .mobile-menu .cta { width:100%; border-radius:8px; }
+      .links button {
+        background: none;
+        color: #fff;
+        font-weight: bold;
+      }
+      .cta {
+        background: var(--o);
+        padding: 10px 14px;
+        font-weight: bold;
+        border-radius: 5px;
+      }
+      #topLogout { border-color:#ff9b96; background:#fff7f6; color:#9d2525; font-weight:bold; transition:background .18s,color .18s,border-color .18s,transform .18s; }
+      #topLogout:hover { background:#b52d2d; color:#fff; border-color:#b52d2d; transform:translateY(-1px); }
+      .logout-cta { background:#a92a2a; color:#fff; transition:background .18s,transform .18s; }
+      .logout-cta:hover { background:#7f1d1d; transform:translateY(-1px); }
+      .datebar {
+        background: #34353a;
+      }
+      .sub {
+        display: flex;
+        align-items: center;
+        height: 34px;
+        color: #eee;
+        font-size: 12px;
+        font-weight: 700;
+      }
+      .sub::before {
+        content: "TODAY";
+        color: var(--o);
+        font-size: 10px;
+        letter-spacing: 1px;
+        margin-right: 10px;
+      }
+      .wrap {
+        min-height: calc(100vh - 150px);
+        padding-top: 32px;
+        padding-bottom: 58px;
+      }
+      .view {
+        display: none;
+      }
+      .view.active {
+        display: block;
+      }
+      .hero {
+        background:
+          linear-gradient(90deg, #111d, #1112),
+          url("https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=1400&q=80")
+            center/cover;
+        color: #fff;
+        min-height: 260px;
+        border-radius: 10px;
+        padding: 48px;
+        display: flex;
+        align-items: end;
+        margin-bottom: 34px;
+      }
+      .hero h1 {
+        font-size: 38px;
+        margin: 0;
+      }
+      .title {
+        border-bottom: 2px solid var(--o);
+        padding-bottom: 10px;
+        font-size: 22px;
+      }
+      .grid {
+        display: grid;
+        /* slightly wider tiles and centered layout */
+        grid-template-columns: repeat(auto-fill, 260px);
+        gap: 24px;
+        align-items: start;
+        justify-content: center;
+        max-width: 1360px;
+        margin: 0 auto;
+        padding-left: 6px;
+        padding-right: 6px;
+      }
+      .card { width:260px; display:flex; flex-direction:column; }
+      .card,
+      .box {
+        background: #fff;
+        border-radius: 9px;
+        box-shadow: 0 5px 18px #0001;
+        overflow: hidden;
+      }
+      .poster {
+        width:100%;
+        height: 360px; /* fixed tile height for uniform grid */
+        background-position: center;
+        background-size: cover;
+        flex: 0 0 360px;
+      }
+      .card div:last-child {
+        padding: 14px;
+        display:flex;
+        flex-direction:column;
+        gap:8px;
+        flex:1 1 auto;
+      }
+      .card h3 {
+        margin: 0;
+        font-size: 16px;
+        line-height: 1.2;
+        display: -webkit-box;
+        line-clamp: 2;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .meta {
+        font-size: 12px;
+        color: #666;
+      }
+      .book {
+        width: 100%;
+        background: var(--b);
+        color: #fff;
+        padding: 10px;
+        font-weight: bold;
+        border-radius: 4px;
+        margin-top: auto;
+      }
+      .book:hover,
+      .primary {
+        background: var(--o);
+        color: #111;
+      }
+      .primary {
+        padding: 11px 16px;
+        font-weight: bold;
+        border-radius: 5px;
+      }
+      .detail,
+      .bookgrid {
+        display: grid;
+        gap: 28px;
+        padding: 28px;
+      }
+      .detail {
+        grid-template-columns: 280px 1fr;
+      }
+      .bookgrid {
+        grid-template-columns: minmax(520px, 1.08fr) minmax(360px, 0.92fr);
+        align-items: start;
+      }
+      .detailposter {
+        width:100%;
+        aspect-ratio: 2 / 3;
+        height: auto;
+        max-height: 640px;
+        background-position: center;
+        background-size: cover;
+        border-radius: 6px;
+      }
+      /* strong selector to ensure poster tiles use portrait sizing */
+      .card > .poster, .grid .poster {
+        height: 360px !important; /* enforce equal heights */
+        min-height: 0 !important;
+        max-height: none !important;
+        background-size: cover !important;
+        background-position: center !important;
+        display: block !important;
+      }
+      .heading {
+        background: #fff0df;
+        padding: 17px;
+        border-left: 5px solid var(--o);
+        margin: 0;
+      }
+      .schedule {
+        background: #fff5e9;
+        padding: 17px;
+        margin-top: 20px;
+      }
+      .choice {
+        padding: 9px 13px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        background: #fff;
+        margin: 0;
+      }
+      .schedule #days,
+      .schedule #times {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 10px;
+      }
+      .schedule #times {
+        margin-top: 8px;
+      }
+      .schedule #next {
+        display: block;
+        margin-top: 14px;
+      }
+      .choice.selected {
+        background: var(--o);
+        border-color: var(--o);
+      }
+      .primary:disabled {
+        background: #aaa;
+      }
+      .seatbox {
+        padding: 25px;
+        min-width: 0;
+      }
+      .screen {
+        background: linear-gradient(90deg, #555, #ddd, #555);
+        text-align: center;
+        color: #fff;
+        padding: 10px;
+        border-radius: 60% 60% 4px 4px;
+        font-weight: bold;
+      }
+      .plan {
+        max-width: 680px;
+        margin: 28px auto;
+        min-width: 0;
+      }
+      .row {
+        display: grid;
+        grid-template-columns: 24px minmax(0, 1fr) 30px minmax(0, 1fr);
+        gap: 8px;
+        align-items: center;
+        margin: 8px 0;
+      }
+      .sets {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 7px;
+        min-width: 0;
+      }
+      .seat {
+        height: 31px;
+        min-width: 0;
+        background: #ff8a17;
+        border-radius: 7px 7px 3px 3px;
+        border-bottom: 4px solid #b85000;
+        font-size: 10px;
+        font-weight: bold;
+      }
+      .seat.selected {
+        background: var(--x);
+        color: #fff;
+        border-bottom-color: #07519d;
+      }
+      .seat.occupied {
+        background: #777;
+        color: #ddd;
+        border-bottom-color: #444;
+        cursor: not-allowed;
+      }
+      .legend,
+      .hint {
+        text-align: center;
+      }
+      .dot {
+        display: inline-block;
+        width: 13px;
+        height: 13px;
+        border-radius: 3px;
+        margin: 0 4px 0 13px;
+      }
+      .form {
+        padding: 25px;
+      }
+      .field {
+        margin-bottom: 14px;
+      }
+      .field label {
+        display: block;
+        font-weight: bold;
+        margin-bottom: 5px;
+      }
+      .field input,
+      .field select {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #d5d6db;
+        border-radius: 5px;
+      }
+      .field input[type="checkbox"] { width:auto; padding:0; margin:0; accent-color:var(--o); }
+      .field label.small { display:flex; align-items:center; gap:7px; margin-top:8px; font-weight:normal; cursor:pointer; }
+      .movie-search { position:relative; }
+      .movie-search::before { content:"⌕"; position:absolute; z-index:1; left:12px; top:50%; transform:translateY(-50%); color:#777d87; font-size:23px; line-height:1; pointer-events:none; }
+      .movie-search input { padding-left:39px !important; }
+      .line {
+        display: flex;
+        justify-content: space-between;
+        padding: 5px 0;
+      }
+      .summary {
+        border-top: 1px solid #ddd;
+        margin-top: 12px;
+        padding-top: 10px;
+      }
+      .grand {
+        font-size: 20px;
+        font-weight: bold;
+        color: #d65e00;
+      }
+      .notice {
+        padding: 11px;
+        margin-top: 13px;
+        border-radius: 5px;
+      }
+      .error {
+        background: #ffe3e1;
+        color: #922;
+      }
+      .success {
+        background: #dff4e7;
+        color: #176;
+      }
+      .auth {
+        max-width: 450px;
+        margin: 35px auto;
+      }
+      .auth h1 {
+        text-align: center;
+      }
+      .payment-card {
+        max-width: 760px;
+        margin: 8px auto;
+        padding: 0;
+        overflow: hidden;
+      }
+      .payment-head {
+        background: linear-gradient(135deg, #111217, #31343c);
+        color: #fff;
+        padding: 28px 32px;
+      }
+      .payment-head h1 {
+        margin: 0 0 6px;
+        font-size: 27px;
+      }
+      .payment-body {
+        display: grid;
+        grid-template-columns: 1fr 250px;
+        gap: 28px;
+        padding: 30px 32px;
+        align-items: center;
+      }
+      .payment-amount {
+        color: var(--o);
+        font-size: 32px;
+        font-weight: 900;
+        margin: 8px 0;
+      }
+      .receipt-card {
+        max-width: 680px;
+        margin: 12px auto;
+        overflow: hidden;
+      }
+      .receipt-banner {
+        background: linear-gradient(135deg, #111217, #30343d);
+        color: #fff;
+        padding: 27px 31px;
+        border-bottom: 4px solid var(--o);
+      }
+      .receipt-banner h1 {
+        margin: 5px 0 0;
+        font-size: 28px;
+      }
+      .receipt-body {
+        padding: 27px 31px 30px;
+      }
+      .receipt-reference {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: #fff4e8;
+        border-radius: 7px;
+        padding: 12px 14px;
+        margin: 17px 0;
+      }
+      .receipt-reference b {
+        color: #bd5700;
+      }
+      .receipt-details {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px 24px;
+        margin: 18px 0;
+      }
+      .receipt-details span {
+        display: block;
+        color: #71757e;
+        font-size: 11px;
+        font-weight: bold;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+      }
+      .receipt-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 21px;
+      }
+      .receipt-actions .choice {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+      }
+      .qr-wrap {
+        background: #fff;
+        border: 1px solid #e2e2e4;
+        border-radius: 10px;
+        padding: 12px;
+        text-align: center;
+        box-shadow: 0 4px 14px #00000010;
+      }
+      .qr-wrap img {
+        display: block;
+        width: 100%;
+        aspect-ratio: 1;
+      }
+      .qr-wrap small {
+        color: #666;
+      }
+      @media (max-width: 600px) {
+        .payment-body {
+          grid-template-columns: 1fr;
+        }
+        .qr-wrap {
+          max-width: 240px;
+          margin: auto;
+        }
+        .receipt-details {
+          grid-template-columns: 1fr;
+        }
+      }
+      /* Responsive tweaks for medium and small screens */
+      @media (max-width: 760px) {
+        /* Make notification and avatar menus compact and anchored near their buttons
+           We'll position them dynamically via JS so they always appear under their icons */
+        .notification-menu, .avatar-menu, .mobile-menu {
+          position: absolute;
+          top: 64px;
+          z-index: 80;
+          transform: translateY(-6px);
+          opacity: 0;
+          transition: transform .18s ease, opacity .18s ease;
+          width: min(320px, calc(100vw - 40px));
+          max-height: 60vh;
+          left: auto;
+          right: auto;
+        }
+        .notification-menu.open, .avatar-menu.open, .mobile-menu.open { transform: translateY(0); opacity:1; }
+        .notification-menu { box-shadow: 0 12px 32px #0006; }
+      }
+      @media (max-width: 420px) {
+        .hero h1 { font-size: 22px; }
+        .poster { max-height: 360px; min-height: 180px; }
+        .notification-count { right:-6px; top:-6px; }
+        .avatar-btn { width:34px; height:34px; }
+        /* on very narrow screens allow menus to occupy centered width */
+        .avatar-menu { right:6px; left:6px; top:64px; }
+        .notification-menu { right:6px; left:6px; top:64px; }
+        .mobile-menu { right:6px; left:6px; top:64px; width: calc(100% - 12px); }
+      }
+      .small {
+        font-size: 12px;
+        color: #666;
+      }
+      .table {
+        width: 100%;
+        border-collapse: collapse;
+        background: #fff;
+      }
+      .table th,
+      .table td {
+        padding: 11px;
+        border-bottom: 1px solid #ddd;
+        text-align: left;
+      }
+      .table th {
+        background: #222;
+        color: #fff;
+      }
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 14px;
+      }
+      .stat {
+        background: #fff;
+        padding: 18px;
+        border-radius: 8px;
+      }
+      .stat b {
+        display: block;
+        color: var(--o);
+        font-size: 26px;
+      }
+      .admin-grid { display:grid; grid-template-columns: 360px 1fr; gap:20px; align-items:start; margin:22px 0; }
+      .admin-section { margin-top:28px; }
+      .admin-actions { display:flex; flex-wrap:wrap; gap:7px; }
+      .admin-actions button { padding:7px 9px; font-size:12px; }
+      .danger { background:#a92a2a; color:#fff; }
+      .muted { color:#68707a; font-size:12px; }
+      .badge { display:inline-block; padding:4px 7px; border-radius:999px; background:#fff1df; color:#a94e00; font-size:11px; font-weight:bold; }
+      .modal-backdrop { position:fixed; inset:0; z-index:20; display:flex; align-items:center; justify-content:center; padding:20px; background:#111a; }
+      .modal { width:min(560px,100%); max-height:calc(100vh - 40px); overflow:auto; background:#fff; border-radius:10px; box-shadow:0 18px 55px #0007; }
+      .modal-head { display:flex; align-items:center; justify-content:space-between; padding:18px 22px; background:#111217; color:#fff; border-bottom:4px solid var(--o); }
+      .modal-head h2 { margin:0; font-size:20px; }
+      .modal-close { background:transparent; color:#fff; font-size:25px; line-height:1; }
+      .admin-shell { display:grid; grid-template-columns:220px minmax(0,1fr); gap:22px; align-items:start; margin-top:22px; }
+      .admin-nav { background:linear-gradient(165deg,#1d2028,#0d0f14); border-radius:14px; padding:12px; position:sticky; top:16px; box-shadow:0 14px 30px #10121728; }
+      .admin-nav::before { content:"EAS MANAGEMENT"; display:block; padding:10px 12px 16px; color:#ff9b45; font-size:10px; font-weight:800; letter-spacing:1.4px; }
+      .admin-nav button { width:100%; padding:12px; text-align:left; color:#d8d9df; background:transparent; border-radius:8px; font-weight:bold; transition:background .18s,color .18s,transform .18s; }
+      .admin-nav button:hover { background:#ffffff14; color:#fff; transform:translateX(2px); }
+      .admin-nav button.active { background:linear-gradient(135deg,#ff8b20,#ff6900); color:#111; box-shadow:0 5px 12px #ff760044; }
+      .admin-page-head { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:22px; padding:4px 0 15px; border-bottom:1px solid #e2e5eb; }
+      .admin-page-head h2 { margin:0; font-size:25px; letter-spacing:-.4px; }
+      .admin-page-head .muted { margin:6px 0 0; font-size:13px; }
+      #admin > .title { margin:0; padding:0 0 15px; border-bottom:0; font-size:25px; letter-spacing:-.5px; }
+      .stats { gap:16px; }
+      .stat { position:relative; overflow:hidden; min-height:108px; padding:20px; border:1px solid #edf0f4; border-radius:12px; box-shadow:0 8px 20px #1d27330c; }
+      .stat::after { content:""; position:absolute; width:64px; height:64px; border-radius:50%; right:-21px; top:-23px; background:#fff0e1; }
+      .stat:nth-child(2)::after { background:#e8f1ff; }
+      .stat:nth-child(3)::after { background:#e5f8ee; }
+      .stat:nth-child(4)::after { background:#fff0f0; }
+      .stat b { position:relative; z-index:1; margin-bottom:7px; color:#f46d00; font-size:28px; letter-spacing:-.5px; }
+      .stat:nth-child(3) b { color:#16854d; }
+      .overview-panels { display:grid; grid-template-columns:1.15fr .85fr; gap:16px; margin-top:22px; }
+      .overview-card { background:#fff; border:1px solid #edf0f4; border-radius:12px; padding:20px; box-shadow:0 8px 20px #1d27330c; }
+      .overview-card h3 { margin:0 0 8px; font-size:16px; }
+      .queue-row { display:flex; justify-content:space-between; align-items:center; padding:12px 0; border-top:1px solid #edf0f4; }
+      .queue-row:first-of-type { border-top:0; }
+      .queue-row b { font-size:18px; }
+      #admin .table { border:1px solid #e8ebf0; border-radius:12px; overflow:hidden; box-shadow:0 8px 20px #1d273308; }
+      #admin .table th { background:#20232b; padding:13px 14px; font-size:12px; letter-spacing:.2px; }
+      #admin .table td { padding:14px; vertical-align:middle; }
+      #admin .table tr:last-child td { border-bottom:0; }
+      #admin .table tbody tr:hover { background:#fffaf5; }
+      #admin .choice { border-color:#d7dce4; font-weight:bold; }
+      #admin .primary, #admin .danger { border-radius:6px; font-weight:bold; }
+      .add-movie-btn { display:inline-flex; align-items:center; gap:8px; }
+      .add-movie-btn span { display:inline-grid; place-items:center; width:20px; height:20px; border-radius:50%; background:#111; color:#fff; font-size:18px; line-height:1; }
+      .avatar-btn::before, .avatar-btn::after { display:none; }
+      .avatar-btn { display:inline-grid; place-items:center; width:40px; height:40px; padding:0; border:2px solid #ff8b20; border-radius:50%; background:#fff2e4; font-weight:700; color:#9a4600; }
+      .avatar-btn:hover { background:#ff8b20; color:#111; border-color:#ffb777; }
+      .avatar-icon { width:20px; height:20px; color:#9a4600; }
+      .avatar-menu-head { padding:12px 16px; background:#fff; border-bottom:1px solid #f2f3f6; }
+      .avatar-menu-name { font-weight:800; color:#222; }
+      .avatar-menu-email { font-size:12px; color:#6b7178; margin-top:4px; }
+      .avatar-menu .btn-row { display:flex; flex-direction:column; }
+      .avatar-menu .btn-row button { padding:12px 16px; text-align:left; background:transparent; border:0; font-weight:700; color:#222; }
+      .avatar-menu .btn-row button + button { border-top:1px solid #f2f3f6; }
+      .avatar-menu .role-badge { display:inline-block; background:#fff6ea; color:#a94e00; padding:6px 8px; border-radius:999px; font-size:11px; font-weight:800; margin-left:8px; }
+      .avatar-wrap { position:relative; display:inline-block; }
+      .avatar-menu { position:absolute; right:0; top:52px; z-index:30; min-width:200px; background:#fff; color:#1f232b; border-radius:10px; box-shadow:0 12px 36px #0004; border:1px solid #e7e9ee; overflow:hidden; padding:8px 0; }
+      .avatar-menu { transition: transform .18s ease, opacity .18s ease; transform-origin: top right; transform: translateY(-6px); opacity: 0; }
+      .avatar-menu.open { transform: translateY(0); opacity: 1; }
+      .avatar-menu::before { content:""; position:absolute; right:18px; top:-6px; width:12px; height:12px; background:#fff; transform:rotate(45deg); box-shadow:-1px -1px 0 0 #e7e9ee; }
+      .avatar-menu button { display:block; width:100%; padding:12px 16px; text-align:left; background:transparent; border:0; font-weight:700; color:#222; }
+      .avatar-menu button + button { border-top:1px solid #f2f3f6; }
+      .avatar-menu button:hover { background:#fff7ef; }
+      .notification-wrap { position:relative; }
+      .notification-btn { position:relative; width:40px; height:40px; border-radius:50%; background:#ffffff12; color:#fff; font-size:19px; display:inline-grid; place-items:center; }
+      .notification-btn svg { width:18px; height:18px; color:currentColor; }
+      .notification-btn:hover { background:#ffffff25; }
+      .notification-count { position:absolute; min-width:17px; height:17px; padding:1px 4px; right:-4px; top:-4px; border-radius:10px; background:#ff7900; color:#111; font-size:10px; font-weight:bold; }
+      .notification-menu { position:absolute; right:0; top:47px; z-index:30; width:min(380px,calc(100vw - 30px)); max-height:460px; overflow:auto; background:#fff; color:#1f232b; border-radius:12px; box-shadow:0 16px 42px #0004; border:1px solid #e7e9ee; }
+      .notification-menu { transition: transform .18s ease, opacity .18s ease; transform-origin: top right; transform: translateY(-6px); opacity: 0; }
+      .notification-menu.open { transform: translateY(0); opacity: 1; }
+      .menu-pointer { position:absolute; top:-7px; width:12px; height:12px; background:#fff; transform:rotate(45deg); box-shadow:-1px -1px 0 0 #e7e9ee; border-radius:2px; }
+      .notification-menu header { display:flex; justify-content:space-between; align-items:center; padding:15px 16px 11px; border-bottom:1px solid #e9ebef; }
+      .notification-menu header b { font-size:15px; }
+      .notification-item { width:100%; padding:13px 16px; text-align:left; background:#fff; border-bottom:1px solid #eff0f3; }
+      .notification-item:hover { background:#fff7ef; }
+      .notification-item.unread { background:#fff3e5; border-left:3px solid var(--o); }
+      .notification-item b, .notification-item small { display:block; }
+      .notification-item small { color:#69717c; margin-top:4px; line-height:1.35; }
+      .notification-empty { padding:28px 16px; text-align:center; color:#737983; }
+      .settings-card { max-width:500px; margin:35px auto; padding:0; overflow:hidden; border:1px solid #eceff3; border-radius:14px; box-shadow:0 14px 34px #18212d14; }
+      .settings-banner { padding:26px 30px 22px; background:linear-gradient(135deg,#1b1e26,#303642); color:#fff; border-bottom:4px solid var(--o); }
+      .settings-avatar { width:48px; height:48px; margin-bottom:13px; border-radius:50%; background:var(--o); position:relative; }
+      .settings-avatar::before { content:""; position:absolute; width:13px; height:13px; top:9px; left:17px; border-radius:50%; background:#17191f; }
+      .settings-avatar::after { content:""; position:absolute; width:25px; height:13px; left:11px; bottom:8px; border-radius:14px 14px 8px 8px; background:#17191f; }
+      .settings-banner h1 { margin:0; font-size:25px; }
+      .settings-banner p { margin:6px 0 0; color:#d3d7df; }
+      .settings-card .settings-body { padding:26px 30px 30px; }
+      .settings-card .field input[readonly] { background:#f4f5f7; color:#69717c; }
+      @media (max-width: 760px) { .admin-shell { grid-template-columns:1fr; } .admin-nav { min-height:0; height:auto; position:static; display:flex; flex-direction:row; overflow:auto; } .admin-nav::before { display:none; } .admin-nav button { min-width:max-content; } .overview-panels { grid-template-columns:1fr; } }
+      @media (max-width: 760px) {
+        .grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap:16px; }
+        .card { width:100%; }
+      }
+      @media (max-width: 900px) { .admin-grid { grid-template-columns:1fr; } }
+      .footer {
+        background: var(--b);
+        border-top: 4px solid var(--o);
+        color: #ddd;
+        text-align: center;
+        padding: 22px;
+      }
+      @media (max-width: 760px) {
+        .links {
+          display: none;
+        }
+        .mobile-toggle { display:inline-flex; align-items:center; justify-content:center; }
+        nav { justify-content: space-between; height:64px; }
+        .cta { padding:8px 10px; font-size:13px; }
+        .grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .detail,
+        .bookgrid {
+          grid-template-columns: 1fr;
+        }
+        .stats {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+      @media (max-width: 420px) {
+        nav { height:58px; }
+        .grid {
+          grid-template-columns: 1fr;
+        }
+        .seatbox {
+          padding: 13px;
+        }
+        .sets {
+          gap: 4px;
+        }
+        .row {
+          gap: 4px;
+        }
+        .hero {
+          padding: 25px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="top">
+        <nav>
+          <div class="logo">
+            <small>YOUR MOVIE EXPERIENCE</small><span>EAS</span><b>cinema</b>
+          </div>
+          <button class="mobile-toggle" id="mobileMenuBtn" onclick="event.stopPropagation(); toggleMobileMenu()" aria-label="Open menu" title="Menu">
+            <svg width="20" height="14" viewBox="0 0 24 14" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect x="0" y="1" width="24" height="2" rx="1" fill="currentColor"/><rect x="0" y="6" width="24" height="2" rx="1" fill="currentColor"/><rect x="0" y="11" width="24" height="2" rx="1" fill="currentColor"/></svg>
+          </button>
+          <div class="links">
+            <button onclick="go('home')">NOW SHOWING</button
+            ><button onclick="go('soon')">COMING SOON</button
+            ><button onclick="go('search')">MY BOOKINGS</button>
+          </div>
+          <button class="cta" id="acct" onclick="account()">LOGIN / SIGN UP</button>
+          <div class="notification-wrap" id="notificationWrap" style="display:none">
+            <button class="notification-btn" onclick="toggleNotifications()" aria-label="Notifications" title="Notifications">
+              <svg class="bell-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M15 17H9a3 3 0 0 1-3-3v-4a6 6 0 1 1 12 0v4a3 3 0 0 1-3 3z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M13.73 21a2 2 0 0 1-3.46 0" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span class="notification-count" id="notificationCount" style="display:none">0</span>
+            </button>
+            <div class="notification-menu" id="notificationMenu" style="display:none"></div>
+          </div>
+          <div class="avatar-wrap" id="avatarWrap" style="display:none">
+            <button class="avatar-btn" id="profileBtn" onclick="toggleAvatarMenu()" aria-label="Account settings" title="Account settings"></button>
+            <div class="avatar-menu" id="avatarMenu" style="display:none"></div>
+          </div>
+          <div class="mobile-menu" id="mobileMenu" style="display:none">
+            <button onclick="go('home'); toggleMobileMenu()">NOW SHOWING</button>
+            <button onclick="go('soon'); toggleMobileMenu()">COMING SOON</button>
+            <button onclick="go('search'); toggleMobileMenu()">MY BOOKINGS</button>
+          </div>
+        </nav>
+      </div>
+      <div class="datebar"><div class="sub" id="today"></div></div>
+    </header>
+    <div id="mobileBackdrop" class="backdrop" style="display:none" onclick="closeAllMenus()"></div>
+    <main class="wrap">
+      <section class="view active" id="home">
+        <div class="hero">
+          <div>
+            <h1>Feel every moment.</h1>
+            <p>Book the best seat for your next big-screen experience.</p>
+          </div>
+        </div>
+        <h2 class="title">NOW SHOWING</h2>
+        <div class="field movie-search" style="max-width: 390px; margin-bottom: 20px">
+          <input
+            id="nowSearch"
+            type="search"
+            placeholder="Search now showing movies..."
+            oninput="searchNowShowing(this.value)"
+          />
+        </div>
+        <div class="grid" id="showing"></div>
+      </section>
+      <section class="view" id="soon">
+        <h2 class="title">COMING SOON</h2>
+        <div class="field movie-search" style="max-width: 390px; margin-bottom: 20px">
+          <input
+            id="soonSearch"
+            type="search"
+            placeholder="Search coming soon movies..."
+            oninput="searchComingSoon(this.value)"
+          />
+        </div>
+        <div class="grid" id="upcoming"></div>
+      </section>
+      <section class="view" id="details"></section>
+      <section class="view" id="booking"></section>
+      <section class="view" id="search">
+        <h2 class="title">MY BOOKINGS</h2>
+        <div id="bookingList"></div>
+      </section>
+      <section class="view" id="auth"></section>
+      <section class="view" id="admin"></section>
+    </main>
+    <footer class="footer">© 2026 EAScinema • Cinema Booking System</footer>
+    <script>
+      const films = [
+        [
+          "space",
+          "Galactic Odyssey",
+          "Sci-Fi, Adventure",
+          "2h 16m",
+          "PG",
+          360,
+          "https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?auto=format&fit=crop&w=700&q=80",
+          "A daring mission across the stars may decide the fate of Earth.",
+        ],
+        [
+          "case",
+          "The Last Case",
+          "Mystery, Thriller",
+          "1h 58m",
+          "PG-13",
+          330,
+          "https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&w=700&q=80",
+          "One last investigation exposes a dangerous city secret.",
+        ],
+        [
+          "summit",
+          "Summit",
+          "Adventure, Drama",
+          "2h 04m",
+          "PG",
+          350,
+          "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=700&q=80",
+          "Above the clouds, a team finds courage in the impossible.",
+        ],
+        [
+          "signal",
+          "Midnight Signal",
+          "Horror, Thriller",
+          "1h 46m",
+          "R-13",
+          320,
+          "https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=700&q=80",
+          "A lost midnight broadcast returns with a terrifying message.",
+        ],
+        [
+          "afterglow",
+          "Afterglow",
+          "Romance, Drama",
+          "1h 55m",
+          "PG",
+          330,
+          "https://images.unsplash.com/photo-1519608487953-e999c86e7454?auto=format&fit=crop&w=700&q=80",
+          "Two old friends discover that the best stories begin after sunset.",
+        ],
+        [
+          "velocity",
+          "Velocity Run",
+          "Action, Crime",
+          "2h 09m",
+          "PG-13",
+          360,
+          "https://images.unsplash.com/photo-1493238792000-8113da705763?auto=format&fit=crop&w=700&q=80",
+          "A fearless driver has one night to outrun a city-wide conspiracy.",
+        ],
+        [
+          "orbit",
+          "Orbit 9",
+          "Science Fiction, Mystery",
+          "2h 02m",
+          "PG-13",
+          350,
+          "https://images.unsplash.com/photo-1444703686981-a3abbc4d4fe3?auto=format&fit=crop&w=700&q=80",
+          "A message from deep space changes the course of a crew's mission.",
+        ],
+        [
+          "perfect",
+          "Perfect Weekend",
+          "Comedy, Family",
+          "1h 43m",
+          "G",
+          300,
+          "https://images.unsplash.com/photo-1529333166437-7750a6dd5a70?auto=format&fit=crop&w=700&q=80",
+          "An unexpected road trip brings one family closer than ever.",
+        ],
+      ];
+      const future = [
+        [
+          "Echoes of Summer",
+          "Romance, Drama",
+          "Coming October",
+          "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?auto=format&fit=crop&w=700&q=80",
+        ],
+        [
+          "Titan Force",
+          "Action, Sci-Fi",
+          "Coming November",
+          "https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=700&q=80",
+        ],
+        [
+          "The Wild Road",
+          "Family, Adventure",
+          "Coming December",
+          "https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=700&q=80",
+        ],
+        [
+          "Velvet Curtain",
+          "Drama, Music",
+          "Coming January",
+          "https://images.unsplash.com/photo-1516280440614-37939bbacd81?auto=format&fit=crop&w=700&q=80",
+        ],
+      ];
+      let film,
+        day,
+        show,
+        seats = [];
+      const get = (k, d = []) =>
+          JSON.parse(localStorage.getItem(k) || JSON.stringify(d)),
+        put = (k, v) => localStorage.setItem(k, JSON.stringify(v));
+      const money = (value) => `₱${Number(value || 0).toFixed(2)}`;
+      function addNotification(recipient, title, message, destination, payload = null) {
+        const items = get("easNotifications");
+        items.unshift({ id:`notice-${Date.now()}-${Math.random().toString(36).slice(2,6)}`, recipient, title, message, destination, payload, read:false, createdAt:new Date().toLocaleString("en-PH") });
+        put("easNotifications", items.slice(0,100));
+        renderNotificationButton();
+        // ensure menus are closed when account state changes
+        try { const nm = document.getElementById('notificationMenu'); if(nm){ nm.style.display='none'; nm.classList.remove('open'); } } catch(e){}
+        try { const am = document.getElementById('avatarMenu'); if(am){ am.style.display='none'; am.classList.remove('open'); } } catch(e){}
+      }
+      function notificationsFor(user) { return get("easNotifications").filter(n => n.recipient === (user.role === "admin" ? "admin" : user.email)); }
+      function renderNotificationButton() {
+        const user=get("easSession",null), wrap=document.getElementById("notificationWrap"), count=document.getElementById("notificationCount");
+        if (!wrap || !count) return;
+        wrap.style.display=user ? "block" : "none";
+        if (!user) return;
+        const unread=notificationsFor(user).filter(n=>!n.read).length;
+        count.textContent=unread>99?"99+":unread;
+        count.style.display=unread?"block":"none";
+      }
+      function toggleNotifications() {
+        const user=get("easSession",null), menu=document.getElementById("notificationMenu");
+        if(!user || !menu)return;
+        const items=notificationsFor(user);
+        const rows = items.length ? items.map(n => {
+          const wrapperOpen = `<div class="notification-item ${n.read?'':'unread'}" onclick="event.stopPropagation(); openNotification('${n.id}')">`;
+          const base = `${wrapperOpen}<b>${n.title}</b><small>${n.message}</small><small>${n.createdAt}</small>`;
+          if (n.payload && n.destination === 'bookings' && user.role !== 'admin') {
+            // actionable booking notification for customer
+            return base + `<div style="margin-top:8px;display:flex;gap:8px"><button class="primary" onclick="event.stopPropagation(); acceptNotification('${n.id}')">Accept</button><button class="choice" onclick="event.stopPropagation(); declineNotification('${n.id}')">Decline</button></div></div>`;
+          }
+          return base + `</div>`;
+        }).join('') : '<div class="notification-empty">You are all caught up.</div>';
+        menu.innerHTML = `<header><b>Notifications</b><button class="choice" onclick="event.stopPropagation(); markAllNotificationsRead()">Mark all read</button></header>${rows}`;
+        // ensure other menus are closed to avoid overlap on small screens
+        try { const am = document.getElementById('avatarMenu'); if (am) { am.style.display='none'; am.classList.remove('open'); } } catch(e){}
+        try { const mm = document.getElementById('mobileMenu'); if (mm) { mm.style.display='none'; mm.classList.remove('open'); } } catch(e){}
+        const shown = menu.style.display === 'block';
+        if (shown) { menu.style.display = 'none'; menu.classList.remove('open'); hideBackdrop(); }
+        else {
+          // position menu under the notification button before showing
+          const btn = document.querySelector('#notificationWrap .notification-btn');
+          positionMenu(menu, btn);
+          menu.style.display = 'block'; setTimeout(()=>menu.classList.add('open'),10);
+          showBackdrop();
+        }
+      }
+
+      function acceptNotification(id) {
+        const user = get('easSession', null);
+        if (!user) return;
+        const items = get('easNotifications');
+        const note = items.find(n => n.id === id);
+        if (!note || !note.payload) return;
+        // handle reschedule payload
+        if (note.payload.type === 'reschedule') {
+          const bookings = get('easBookings');
+          const b = bookings.find(x => x.ref === note.payload.ref);
+          if (b) {
+            b.date = note.payload.date;
+            b.time = note.payload.time;
+            b.key = note.payload.key;
+            b.rescheduledAt = new Date().toLocaleString('en-PH');
+            delete b.pendingReschedule;
+            put('easBookings', bookings);
+            addNotification('admin', 'Reschedule accepted', `${b.name} accepted reschedule for ${b.ref}.`, 'bookings');
+          }
+        }
+        note.read = true;
+        put('easNotifications', items);
+        const __nm = document.getElementById('notificationMenu'); if(__nm){ __nm.style.display='none'; __nm.classList.remove('open'); }
+        renderNotificationButton();
+        renderBookings();
+      }
+
+      function declineNotification(id) {
+        const items = get('easNotifications');
+        const note = items.find(n => n.id === id);
+        if (!note) return;
+        if (note.payload && note.payload.type === 'reschedule') {
+          // inform admin that user declined
+          addNotification('admin', 'Reschedule declined', `${note.recipient} declined proposed reschedule for ${note.payload.ref}.`, 'bookings');
+        }
+        note.read = true;
+        put('easNotifications', items);
+        const __nm2 = document.getElementById('notificationMenu'); if(__nm2){ __nm2.style.display='none'; __nm2.classList.remove('open'); }
+        renderNotificationButton();
+      }
+      function markAllNotificationsRead() { const user=get("easSession",null), items=get("easNotifications"); items.forEach(n=>{if(n.recipient===(user.role==="admin"?"admin":user.email))n.read=true}); put("easNotifications",items); const nm=document.getElementById("notificationMenu"); if(nm){ nm.style.display="none"; nm.classList.remove('open'); } renderNotificationButton(); }
+      function openNotification(id) { const user=get("easSession",null), items=get("easNotifications"), note=items.find(n=>n.id===id); if(!note||!user)return; note.read=true; put("easNotifications",items); const nm=document.getElementById("notificationMenu"); if(nm){ nm.style.display="none"; nm.classList.remove('open'); } renderNotificationButton(); if(user.role==="admin") { window.adminTab=note.destination||"overview"; admin(); } else if(note.destination==="bookings") go("search"); else openSettings(); }
+      function syncMovies() {
+        const savedNow = get("easMoviesNow", null);
+        const savedSoon = get("easMoviesSoon", null);
+        if (savedNow) films.splice(0, films.length, ...savedNow);
+        else put("easMoviesNow", films);
+        if (savedSoon) future.splice(0, future.length, ...savedSoon);
+        else put("easMoviesSoon", future);
+      }
+      function go(x) {
+        document
+          .querySelectorAll(".view")
+          .forEach((v) => v.classList.remove("active"));
+        document.getElementById(x).classList.add("active");
+        if (x === "search") renderBookings();
+        scrollTo(0, 0);
+      }
+      function init() {
+        today.textContent = new Date().toLocaleDateString("en-PH", {
+          weekday: "long",
+          month: "long",
+          day: "numeric",
+          year: "numeric",
+        });
+        if (!get("easUsers").length)
+          put("easUsers", [
+            {
+              name: "EAS Admin",
+              email: "admin@eascinema.com",
+              password: "admin123",
+              role: "admin",
+            },
+          ]);
+        syncMovies();
+        searchNowShowing("");
+        searchComingSoon("");
+        setAccount();
+        // close menus when clicking outside (notifications, avatar, mobile menu)
+        document.addEventListener('click', function (e) {
+          const notifWrap = document.getElementById('notificationWrap');
+          const avatarWrap = document.getElementById('avatarWrap');
+          const notifMenu = document.getElementById('notificationMenu');
+          const avatarMenu = document.getElementById('avatarMenu');
+          const mobileMenu = document.getElementById('mobileMenu');
+          const mobileBtn = document.getElementById('mobileMenuBtn');
+          // if click is outside notification wrap, close notification menu
+          if (notifMenu && notifWrap && !notifWrap.contains(e.target)) { notifMenu.style.display = 'none'; notifMenu.classList.remove('open'); }
+          // if click is outside avatar wrap, close avatar menu
+          if (avatarMenu && avatarWrap && !avatarWrap.contains(e.target)) { avatarMenu.style.display = 'none'; avatarMenu.classList.remove('open'); }
+          // if click outside mobile menu and button, close mobile menu
+          if (mobileMenu && mobileBtn && !mobileMenu.contains(e.target) && !mobileBtn.contains(e.target)) { mobileMenu.style.display = 'none'; mobileMenu.classList.remove('open'); }
+        });
+        // stop clicks on control buttons from bubbling to document (prevents immediate close)
+        try {
+          const p = document.getElementById('profileBtn'); if (p) { p.addEventListener('click', e => e.stopPropagation()); p.addEventListener('touchstart', e => e.stopPropagation()); }
+          const n = document.querySelector('#notificationWrap .notification-btn'); if (n) { n.addEventListener('click', e => e.stopPropagation()); n.addEventListener('touchstart', e => e.stopPropagation()); }
+          const mbtn = document.getElementById('mobileMenuBtn'); if (mbtn) { mbtn.addEventListener('click', e => e.stopPropagation()); mbtn.addEventListener('touchstart', e => e.stopPropagation()); }
+        } catch (e) {}
+
+        // also bind backdrop clicks here (ensure handler in same scope)
+        try { const back = document.getElementById('mobileBackdrop'); if (back) { back.addEventListener('click', function(e){ e.stopPropagation(); closeAllMenus(); }); back.addEventListener('touchstart', function(e){ e.stopPropagation(); closeAllMenus(); }); } } catch(e) {}
+
+        // reposition open menus on resize/scroll so they stay aligned with their icons
+        function repositionOpenMenus() {
+          try {
+            const nm = document.getElementById('notificationMenu'); if (nm && nm.style.display === 'block') positionMenu(nm, document.querySelector('#notificationWrap .notification-btn'));
+            const am = document.getElementById('avatarMenu'); if (am && am.style.display === 'block') positionMenu(am, document.querySelector('#avatarWrap .avatar-btn'));
+            const mm = document.getElementById('mobileMenu'); if (mm && mm.style.display === 'block') positionMenu(mm, document.getElementById('mobileMenuBtn'));
+          } catch(e){}
+        }
+        // capturing listener: if click occurs outside any menu or control, close all menus (more reliable on mobile)
+        document.addEventListener('click', function(e){
+          try {
+            const notifWrap = document.getElementById('notificationWrap');
+            const avatarWrap = document.getElementById('avatarWrap');
+            const notifMenu = document.getElementById('notificationMenu');
+            const avatarMenu = document.getElementById('avatarMenu');
+            const mobileMenu = document.getElementById('mobileMenu');
+            const mobileBtn = document.getElementById('mobileMenuBtn');
+            const inNotif = notifWrap && (notifWrap.contains(e.target) || (notifMenu && notifMenu.contains(e.target)));
+            const inAvatar = avatarWrap && (avatarWrap.contains(e.target) || (avatarMenu && avatarMenu.contains(e.target)));
+            const inMobile = (mobileBtn && mobileBtn.contains(e.target)) || (mobileMenu && mobileMenu.contains(e.target));
+            if (!inNotif && !inAvatar && !inMobile) closeAllMenus();
+          } catch(err) {}
+        }, true);
+        window.addEventListener('resize', repositionOpenMenus);
+        window.addEventListener('orientationchange', repositionOpenMenus);
+        window.addEventListener('scroll', repositionOpenMenus, true);
+      }
+
+      function toggleMobileMenu() {
+        const menu = document.getElementById('mobileMenu');
+        const backdrop = document.getElementById('mobileBackdrop');
+        if (!menu) return;
+        const shown = menu.style.display === 'block';
+        // hide other menus
+        try { document.getElementById('notificationMenu').style.display = 'none'; document.getElementById('notificationMenu').classList.remove('open'); } catch(e){}
+        try { document.getElementById('avatarMenu').style.display = 'none'; document.getElementById('avatarMenu').classList.remove('open'); } catch(e){}
+        if (shown) {
+          menu.style.display = 'none'; menu.classList.remove('open'); hideBackdrop();
+        } else {
+          // position mobile menu under the mobile button before showing
+          const btn = document.getElementById('mobileMenuBtn');
+          positionMenu(menu, btn);
+          menu.style.display = 'block'; /* allow next tick to apply class for transition */ setTimeout(()=>menu.classList.add('open'),10);
+          showBackdrop();
+        }
+      }
+
+      function closeMobileMenu() {
+        const menu = document.getElementById('mobileMenu');
+        if (menu) { menu.style.display='none'; menu.classList.remove('open'); }
+      }
+      function showBackdrop() { const b = document.getElementById('mobileBackdrop'); if (b) { b.style.display='block'; b.style.zIndex = 79; } }
+      function hideBackdrop() { const b = document.getElementById('mobileBackdrop'); if (b) { b.style.display='none'; b.style.zIndex = 66; } }
+      function closeAllMenus() { try { document.getElementById('notificationMenu').style.display='none'; document.getElementById('notificationMenu').classList.remove('open'); } catch(e){} try { document.getElementById('avatarMenu').style.display='none'; document.getElementById('avatarMenu').classList.remove('open'); } catch(e){} try { document.getElementById('mobileMenu').style.display='none'; document.getElementById('mobileMenu').classList.remove('open'); } catch(e){} hideBackdrop(); }
+      // position a dropdown menu under its trigger button and ensure it fits the viewport
+      function positionMenu(menu, button) {
+        if (!menu || !button) return;
+        // desired width: same as CSS min(320px, calc(100vw - 40px))
+        const vw = Math.max(document.documentElement.clientWidth || 320, window.innerWidth || 320);
+        const desired = Math.min(320, Math.max(200, vw - 40));
+        menu.style.width = desired + 'px';
+        // position fixed so dropdown is not clipped by parent containers and stays above backdrop
+        menu.style.position = 'fixed';
+        menu.style.zIndex = 1001;
+        // measure button position
+        const rect = button.getBoundingClientRect();
+        // center menu on button (left relative to viewport)
+        let left = Math.round(rect.left + rect.width / 2 - desired / 2);
+        const pad = 10;
+        if (left < pad) left = pad;
+        if (left + desired > vw - pad) left = Math.max(pad, vw - desired - pad);
+        menu.style.left = left + 'px';
+        // place menu vertically below the button (viewport coords)
+        const top = Math.round(rect.bottom + 8);
+        menu.style.top = top + 'px';
+        // clear right to avoid CSS conflicts
+        menu.style.right = 'auto';
+        // add or position pointer element so menu visually points to the trigger
+        try {
+          let ptr = menu.querySelector('.menu-pointer');
+          if (!ptr) { ptr = document.createElement('div'); ptr.className = 'menu-pointer'; menu.appendChild(ptr); }
+          // pointer left relative to menu
+          const btnCenter = rect.left + rect.width / 2;
+          const menuLeft = left;
+          let ptrLeft = Math.round(btnCenter - menuLeft - 6); // 6 = half pointer width
+          const maxPtr = desired - 12; if (ptrLeft < 8) ptrLeft = 8; if (ptrLeft > maxPtr) ptrLeft = maxPtr;
+          ptr.style.left = ptrLeft + 'px';
+        } catch (e) {}
+      }
+      function searchNowShowing(query) {
+        const term = query.trim().toLowerCase();
+        const matches = films.filter((movie) =>
+          `${movie[1]} ${movie[2]}`.toLowerCase().includes(term),
+        );
+        document.getElementById("showing").innerHTML = matches.length
+          ? matches.map(card).join("")
+          : '<p class="small">No now-showing movies match your search.</p>';
+      }
+      function searchComingSoon(query) {
+        const term = query.trim().toLowerCase();
+        const matches = future.filter((movie) =>
+          `${movie[0]} ${movie[1]}`.toLowerCase().includes(term),
+        );
+        document.getElementById("upcoming").innerHTML = matches.length
+          ? matches
+              .map(
+                (x) =>
+                  `<article class="card"><div class="poster" style="background-image:url('${x[3]}')"></div><div><h3>${x[0]}</h3><p class="meta">${x[1]}<br>${x[2]}</p><button class="book" onclick="alert('Reminder saved for ${x[0]}')">REMIND ME</button></div></article>`,
+              )
+              .join("")
+          : '<p class="small">No coming-soon movies match your search.</p>';
+      }
+      function card(x) {
+        return `<article class="card"><div class="poster" style="background-image:url('${x[6]}')"></div><div><h3>${x[1]}</h3><p class="meta">${x[2]}<br>${x[3]} • ₱${x[5]}</p><button class="book" onclick="detail('${x[0]}')">BOOK NOW</button></div></article>`;
+      }
+      function detail(id) {
+        film = films.find((x) => x[0] === id);
+        day = show = "";
+        details.innerHTML = `<h2 class="title">MOVIE DETAILS</h2><div class="box detail"><div class="detailposter" style="background-image:url('${film[6]}')"></div><div><h1 class="heading">${film[1]}</h1><p><b>Rating:</b> ${film[4]} &nbsp; <b>Duration:</b> ${film[3]} &nbsp; <b>Ticket:</b> ₱${film[5]}</p><p><b>Genre:</b> ${film[2]}</p><p>${film[7]}</p><div class="schedule"><b>Select a date and showtime</b><div id="days">${dates()
+          .map(
+            (x) =>
+              `<button class="choice" onclick="pickday('${x}')">${x}</button>`,
+          )
+          .join(
+            "",
+          )}</div><div id="times"></div><button id="next" class="primary" disabled onclick="book()">CONTINUE TO SEATS</button></div></div></div>`;
+        go("details");
+      }
+      function dates() {
+        return [0, 1, 2].map((x) =>
+          new Date(Date.now() + x * 864e5).toLocaleDateString("en-PH", {
+            month: "short",
+            day: "numeric",
+          }),
+        );
+      }
+      function pickday(x) {
+        day = x;
+        [...document.querySelectorAll("#days button")].forEach((b) =>
+          b.classList.toggle("selected", b.textContent === x),
+        );
+        times.innerHTML = ["1:30 PM", "5:00 PM", "8:30 PM"]
+          .map(
+            (x) =>
+              `<button class="choice" onclick="picktime('${x}')">${x}</button>`,
+          )
+          .join("");
+      }
+      function picktime(x) {
+        show = x;
+        [...document.querySelectorAll("#times button")].forEach((b) =>
+          b.classList.toggle("selected", b.textContent === x),
+        );
+        next.disabled = false;
+      }
+      function k() {
+        return film[0] + "|" + day + "|" + show;
+      }
+      function occ() {
+        return get("easBookings")
+          .filter((x) => ["Confirmed", "Payment review"].includes(x.status) && x.key === k())
+          .flatMap((x) => x.seats);
+      }
+      function book() {
+        let u = get("easSession", null);
+        if (!u || u.role !== "customer") {
+          authform("login", "Sign in or create an account before booking.");
+          go("auth");
+          return;
+        }
+        seats = [];
+        let o = occ();
+        booking.innerHTML = `<h2 class="title">SELECT YOUR SEATS</h2><div class="bookgrid"><div class="box seatbox"><div class="screen">SCREEN<br><small>${film[1]} • ${show}</small></div><div class="plan">${"ABCDEFGHIJ"
+          .split("")
+          .map(
+            (r, i) =>
+              `<div class="row"><b>${r}</b><div class="sets">${[1, 2, 3, 4, 5].map((n) => s(r + n, o, i)).join("")}</div><span></span><div class="sets">${[6, 7, 8, 9, 10].map((n) => s(r + n, o, i)).join("")}</div></div>`,
+          )
+          .join(
+            "",
+          )}</div><div class="legend"><i class="dot" style="background:#ff8a17"></i>Available <i class="dot" style="background:#2674c9"></i>Selected <i class="dot" style="background:#777"></i>Occupied</div><p class="hint" id="hint">${100 - o.length} available seats • Select up to 8 seats</p></div><div class="box form"><h2>Your booking</h2><div class="field"><label>Full name</label><input id="name" value="${u.name}" maxlength="60"></div><div class="field"><label>Email</label><input id="mail" value="${u.email}" readonly></div><div class="field"><label>Contact number</label><input id="phone" placeholder="09XXXXXXXXX" maxlength="11"></div><div class="field"><label>Classification</label><select id="classification" onchange="totals()"><option>Regular</option><option>Student</option><option>Senior</option></select></div><div class="field"><label>Membership</label><select id="mem" onchange="totals()"><option>Regular</option><option>Member</option></select></div><div class="field"><label>Payment method</label><select id="payment"><option>GCash</option><option>Maya</option><option>Card</option></select></div><div class="summary"><div class="line"><span>Tickets</span><b id="count">0</b></div><div class="line"><span>Subtotal</span><b id="subtotal">₱0.00</b></div><div class="line"><span>Discount</span><b id="discount">₱0.00</b></div><div class="line grand"><span>Total</span><span id="total">₱0.00</span></div></div><button class="primary" style="width:100%;margin-top:14px" onclick="confirmBook()">CONTINUE TO PAYMENT</button><div id="bmsg"></div></div></div>`;
+        go("booking");
+      }
+      function s(x, o) {
+        return `<button ${o.includes(x) ? "disabled" : ""} class="seat ${o.includes(x) ? "occupied" : ""}" onclick="toggle('${x}')">${x}</button>`;
+      }
+      function toggle(x) {
+        seats = seats.includes(x)
+          ? seats.filter((y) => y !== x)
+          : seats.length < 8
+            ? [...seats, x]
+            : seats;
+        document
+          .querySelectorAll(".seat")
+          .forEach((b) =>
+            b.classList.toggle("selected", seats.includes(b.textContent)),
+          );
+        totals();
+      }
+      function totals() {
+        let n = seats.length,
+          sub = n * film[5],
+          d =
+            (classification.value === "Regular" ? 0 : 20) +
+            (mem.value === "Member" ? 10 : 0);
+        d = Math.min(d, 30);
+        count.textContent = n;
+        subtotal.textContent = "₱" + sub.toFixed(2);
+        discount.textContent = `${d}% (₱${((sub * d) / 100).toFixed(2)})`;
+        total.textContent = "₱" + (sub * (1 - d / 100)).toFixed(2);
+        hint.textContent = `${100 - occ().length} available seats • ${n} selected`;
+      }
+      function confirmBook() {
+        const nameInput = document.getElementById("name");
+        const phoneInput = document.getElementById("phone");
+        const emailInput = document.getElementById("mail");
+        const classificationInput = document.getElementById("classification");
+        const membershipInput = document.getElementById("mem");
+        const paymentInput = document.getElementById("payment");
+        let n = nameInput.value.trim(),
+          p = phoneInput.value.replace(/[\s-]/g, "");
+        if (!/^[A-Za-z][A-Za-z .'-]{1,59}$/.test(n))
+          return bm("Enter a valid full name.");
+        if (!/^(?:0?9)\d{9,10}$/.test(p))
+          return bm("Enter a valid 10- or 11-digit mobile number.");
+        if (!seats.length) return bm("Select at least one seat.");
+        let d =
+            (classificationInput.value === "Regular" ? 0 : 20) +
+            (membershipInput.value === "Member" ? 10 : 0),
+          sub = seats.length * film[5];
+        d = Math.min(d, 30);
+        let b = {
+          ref: "EAS-" + Math.random().toString(36).slice(2, 8).toUpperCase(),
+          key: k(),
+          movie: film[1],
+          date: day,
+          time: show,
+          seats: [...seats],
+          name: n,
+          email: emailInput.value,
+          phone: p,
+          classification: classificationInput.value,
+          membership: membershipInput.value,
+          payment: paymentInput.value,
+          subtotal: sub,
+          discount: d,
+          total: sub * (1 - d / 100),
+          status: "Payment review",
+          paymentStatus: "Pending approval",
+          refund: "Not requested",
+          refundStatus: "Not requested",
+        };
+        showPayment(b);
+      }
+      function bm(x) {
+        const message = document.getElementById("bmsg");
+        message.innerHTML = '<div class="notice error">' + x + "</div>";
+        message.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+      function showPayment(b) {
+        const paymentData = encodeURIComponent(
+          `EAScinema|${b.ref}|${b.name}|PHP ${b.total.toFixed(2)}`,
+        );
+        booking.innerHTML = `<div class="box payment-card"><div class="payment-head"><div class="small">EAScinema secure checkout</div><h1>Complete your payment</h1><div>Scan the QR code with GCash, then enter your payment reference.</div></div><div class="payment-body"><div><div class="small">AMOUNT TO PAY</div><div class="payment-amount">₱${b.total.toFixed(2)}</div><p><b>${b.movie}</b><br>${b.date} • ${b.time}<br>Seats: ${b.seats.join(", ")}</p><div class="field"><label>GCash payment reference</label><input id="paymentReference" inputmode="numeric" placeholder="Enter 11-digit reference" maxlength="11"></div><button class="primary" style="width:100%" onclick="completePayment()">I HAVE COMPLETED PAYMENT</button><button class="choice" style="margin-top:10px" onclick="book()">Back to seat selection</button><div id="paymentMsg"></div></div><div class="qr-wrap"><img alt="GCash payment QR code" src="https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=${paymentData}"><b>GCash QR Payment</b><br><small>Reference: ${b.ref}</small></div></div></div>`;
+        window.pendingBooking = b;
+        configurePaymentMethod(b);
+        go("booking");
+      }
+      function configurePaymentMethod(b) {
+        const headerText = document.querySelector(".payment-head div:last-child");
+        const referenceField = document.getElementById("paymentReference");
+        const qrWrap = document.querySelector(".qr-wrap");
+        const backButton = document.querySelector(".payment-card .choice");
+        backButton.innerHTML = '<span aria-hidden="true" style="font-size:18px">←</span> Back to seat selection';
+        backButton.style.display = "inline-flex";
+        backButton.style.alignItems = "center";
+        backButton.style.gap = "7px";
+        if (b.payment === "Maya") {
+          headerText.textContent = "Scan the QR code with Maya, then enter your payment reference.";
+          referenceField.previousElementSibling.textContent = "Maya payment reference";
+          qrWrap.querySelector("b").textContent = "Maya QR Payment";
+          qrWrap.querySelector("img").alt = "Maya payment QR code";
+          return;
+        }
+        if (b.payment === "Card") {
+          headerText.textContent = "Enter your card details to complete this prototype payment.";
+          referenceField.closest(".field").outerHTML = '<div class="field"><label>Name on card</label><input id="cardName" placeholder="Name shown on your card" maxlength="60"></div><div class="field"><label>Card number</label><input id="cardNumber" inputmode="numeric" placeholder="1234 5678 9012 3456" maxlength="19"></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:12px"><div class="field"><label>Expiry</label><input id="cardExpiry" placeholder="MM/YY" maxlength="5"></div><div class="field"><label>CVV</label><input id="cardCvv" inputmode="numeric" placeholder="123" maxlength="4"></div></div>';
+          qrWrap.style.background = "linear-gradient(135deg,#20232b,#4c5363)";
+          qrWrap.style.color = "#fff";
+          qrWrap.innerHTML = '<div style="font-size:36px">▰</div><b>Secure card checkout</b><br><small style="color:#e6e6e6">Card details are used only for this prototype.</small>';
+        }
+      }
+      function completePayment() {
+        if (window.pendingBooking && window.pendingBooking.payment === "Card") {
+          return completeCardPayment();
+        }
+        const reference = document.getElementById("paymentReference").value.trim();
+        const message = document.getElementById("paymentMsg");
+        if (!/^\d{11}$/.test(reference)) {
+          message.innerHTML = '<div class="notice error">Enter a valid 11-digit payment reference.</div>';
+          return;
+        }
+        if (!window.pendingBooking) return;
+        const b = window.pendingBooking;
+        b.paymentReference = reference;
+        b.status = "Payment review";
+        b.paymentStatus = "Pending approval";
+        const bookings = get("easBookings");
+        bookings.push(b);
+        put("easBookings", bookings);
+        addNotification("admin", "New payment awaiting approval", `${b.name} submitted ${money(b.total)} for ${b.movie}.`, "payments");
+        window.pendingBooking = null;
+        receipt(b);
+      }
+      function completeCardPayment() {
+        const message = document.getElementById("paymentMsg");
+        const cardName = document.getElementById("cardName").value.trim();
+        const cardNumber = document.getElementById("cardNumber").value.replace(/\s/g, "");
+        const expiry = document.getElementById("cardExpiry").value.trim();
+        const cvv = document.getElementById("cardCvv").value.trim();
+        if (!cardName || !/^\d{13,19}$/.test(cardNumber) || !/^(0[1-9]|1[0-2])\/\d{2}$/.test(expiry) || !/^\d{3,4}$/.test(cvv)) {
+          message.innerHTML = '<div class="notice error">Enter valid cardholder, card number, expiry (MM/YY), and CVV details.</div>';
+          return;
+        }
+        const b = window.pendingBooking;
+        b.paymentReference = `Card ending in ${cardNumber.slice(-4)}`;
+        b.status = "Payment review";
+        b.paymentStatus = "Pending approval";
+        const bookings = get("easBookings");
+        bookings.push(b);
+        put("easBookings", bookings);
+        addNotification("admin", "New payment awaiting approval", `${b.name} submitted ${money(b.total)} for ${b.movie}.`, "payments");
+        window.pendingBooking = null;
+        receipt(b);
+      }
+      function receipt(b) {
+        return renderReceipt(b);
+        booking.innerHTML = `<div class="box form auth"><div class="notice success"><b>Booking confirmed!</b> Your seats are reserved.</div><h1>EAScinema Receipt</h1><p><b>Reference:</b> ${b.ref}<br><b>${b.movie}</b><br>${b.date} • ${b.time}<br>Seats: ${b.seats.join(", ")}<br>Payment: ${b.payment}</p><div class="summary"><div class="line"><span>Subtotal</span><span>₱${b.subtotal.toFixed(2)}</span></div><div class="line"><span>Discount</span><span>−₱${((b.subtotal * b.discount) / 100).toFixed(2)}</span></div><div class="line grand"><span>Total paid</span><span>₱${b.total.toFixed(2)}</span></div></div><button class="primary" onclick="print()">PRINT RECEIPT</button> <button class="choice" onclick="go('search')">MY BOOKINGS</button></div>`;
+        go("booking");
+      }
+      function renderReceipt(b) {
+        const discountAmount = (b.subtotal * b.discount) / 100;
+        const paymentReference = b.paymentReference || "Payment verified";
+        booking.innerHTML = `<article class="box receipt-card"><header class="receipt-banner"><div class="small" style="color:#ffc281">EAScinema • Booking confirmation</div><h1>Your movie ticket</h1></header><div class="receipt-body"><div class="notice success"><b>Payment successful!</b> Your seats are confirmed and ready for the show.</div><div class="receipt-reference"><span><span class="small">BOOKING REFERENCE</span><br><b>${b.ref}</b></span><span class="status">CONFIRMED</span></div><div class="receipt-details"><div><span>Movie</span><b>${b.movie}</b></div><div><span>Schedule</span><b>${b.date} • ${b.time}</b></div><div><span>Seats</span><b>${b.seats.join(", ")}</b></div><div><span>Payment</span><b>${b.payment}</b><br><small>${paymentReference}</small></div></div><div class="summary"><div class="line"><span>Tickets (${b.seats.length})</span><b>₱${b.subtotal.toFixed(2)}</b></div><div class="line"><span>Discount${b.discount ? ` (${b.discount}%)` : ""}</span><b>${discountAmount ? `− ₱${discountAmount.toFixed(2)}` : "₱0.00"}</b></div><div class="line grand"><span>Total paid</span><span>₱${b.total.toFixed(2)}</span></div></div><div class="receipt-actions"><button class="primary" onclick="print()"><span aria-hidden="true">⎙</span> Print receipt</button><button class="choice" onclick="go('search')"><span aria-hidden="true">⌕</span> My bookings</button><button class="choice" onclick="go('home')"><span aria-hidden="true">←</span> Browse movies</button></div></div></article>`;
+        go("booking");
+      }
+      function renderBookings() {
+        const user = get("easSession", null);
+        const list = document.getElementById("bookingList");
+        if (!user || user.role !== "customer") {
+          list.innerHTML = '<div class="box form" style="max-width:640px"><p>Please sign in to view your booking history.</p><button class="primary" onclick="authform(\'login\');go(\'auth\')">Sign in</button></div>';
+          return;
+        }
+        const bookings = get("easBookings")
+          .filter((booking) => booking.email.toLowerCase() === user.email.toLowerCase())
+          .reverse();
+        list.innerHTML = bookings.length
+          ? `<div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(280px,1fr))">${bookings.map((booking) => `<article class="box form"><div class="receipt-reference"><span><span class="small">BOOKING REFERENCE</span><br><b>${booking.ref}</b></span><span class="status">${booking.paymentStatus || booking.status}</span></div><p><b>${booking.movie}</b><br>${booking.date} • ${booking.time}<br>Seats: ${booking.seats.join(", ")}<br>Payment: ${booking.payment}<br>Total: <b>₱${booking.total.toFixed(2)}</b></p>${["Confirmed", "Payment review"].includes(booking.status) ? `<div class="admin-actions"><button class="choice" onclick="reschedule('${booking.ref}')">RESCHEDULE</button><button class="book" style="width:auto" onclick="cancel('${booking.ref}')">CANCEL & REQUEST REFUND</button></div>` : `<div class="notice error">${booking.refund}</div>`}</article>`).join("")}</div>`
+          : '<div class="box form" style="max-width:640px"><p>You do not have any bookings yet.</p><button class="primary" onclick="go(\'home\')">Browse movies</button></div>';
+      }
+      function find() {
+        let b = get("easBookings").find(
+          (x) =>
+            x.ref === ref.value.trim().toUpperCase() &&
+            x.email === findmail.value.trim().toLowerCase(),
+        );
+        found.innerHTML = !b
+          ? '<div class="notice error">No booking matches those details.</div>'
+          : `<div class="notice ${b.status === "Confirmed" ? "success" : "error"}"><b>${b.status}</b> • ${b.ref}</div><p><b>${b.movie}</b><br>${b.date}, ${b.time}<br>Seats: ${b.seats.join(", ")}<br>Total: ₱${b.total.toFixed(2)}<br>Refund: ${b.refund}</p>${b.status === "Confirmed" ? `<button class="book" onclick="cancel('${b.ref}')">CANCEL & REQUEST REFUND</button>` : ""}`;
+      }
+      function closeModal() {
+        document.getElementById("appModal")?.remove();
+      }
+      function reschedule(ref) {
+        const b = get("easBookings").find(x => x.ref === ref);
+        if (!b) return;
+        const dayButtons = dates().map(d => `<button class="choice" onclick="selectRescheduleDay('${d}')">${d}</button>`).join("");
+        document.body.insertAdjacentHTML("beforeend", `<div class="modal-backdrop" id="appModal" onclick="if(event.target===this)closeModal()"><section class="modal"><header class="modal-head"><h2>Reschedule booking</h2><button class="modal-close" onclick="closeModal()" aria-label="Close">×</button></header><div class="form"><p><b>${b.movie}</b><br><span class="muted">Current schedule: ${b.date} • ${b.time}</span></p><div class="field"><label>Select a new date</label><div id="rescheduleDays" class="admin-actions">${dayButtons}</div></div><div class="field"><label>Select a new showtime</label><div id="rescheduleTimes" class="admin-actions"></div></div><div id="rescheduleMsg"></div><button class="primary" onclick="confirmReschedule('${ref}')">CONFIRM RESCHEDULE</button></div></section></div>`);
+      }
+      function selectRescheduleDay(selectedDay) {
+        window.rescheduleDay = selectedDay;
+        window.rescheduleTime = "";
+        [...document.querySelectorAll("#rescheduleDays button")].forEach(b => b.classList.toggle("selected", b.textContent === selectedDay));
+        document.getElementById("rescheduleTimes").innerHTML = ["1:30 PM", "5:00 PM", "8:30 PM"].map(t => `<button class="choice" onclick="selectRescheduleTime('${t}')">${t}</button>`).join("");
+      }
+      function selectRescheduleTime(selectedTime) {
+        window.rescheduleTime = selectedTime;
+        [...document.querySelectorAll("#rescheduleTimes button")].forEach(b => b.classList.toggle("selected", b.textContent === selectedTime));
+      }
+      function confirmReschedule(ref) {
+        const message = document.getElementById("rescheduleMsg");
+        if (!window.rescheduleDay || !window.rescheduleTime) { message.innerHTML = '<div class="notice error">Choose both a date and a showtime.</div>'; return; }
+        const bookings = get("easBookings"), booking = bookings.find(x => x.ref === ref);
+        if (!booking) return;
+        const movieId = booking.key.split("|")[0], newKey = `${movieId}|${window.rescheduleDay}|${window.rescheduleTime}`;
+        const conflict = bookings.some(x => x.ref !== ref && ["Confirmed", "Payment review"].includes(x.status) && x.key === newKey && x.seats.some(seat => booking.seats.includes(seat)));
+        if (conflict) { message.innerHTML = '<div class="notice error">One or more of your seats are unavailable at that time. Please choose another schedule.</div>'; return; }
+        // propose reschedule to customer for acceptance
+        booking.pendingReschedule = { date: window.rescheduleDay, time: window.rescheduleTime, key: newKey, proposedAt: new Date().toLocaleString("en-PH"), ref: booking.ref };
+        put("easBookings", bookings);
+        // notify the customer with an actionable payload
+        addNotification(booking.email, "Reschedule proposed", `A new schedule has been proposed for your booking ${booking.ref}: ${window.rescheduleDay} • ${window.rescheduleTime}.`, "bookings", { type: 'reschedule', ref: booking.ref, date: window.rescheduleDay, time: window.rescheduleTime, key: newKey });
+        closeModal();
+        renderBookings();
+      }
+      function cancel(r) {
+        let a = get("easBookings"), b = a.find((x) => x.ref === r);
+        if (!b) return;
+        if (b.paymentStatus !== "Approved") { alert("Refund requests are available after the administrator approves your payment."); return; }
+        if (
+          !confirm(
+            "Cancel this booking? Your refund request will be sent automatically and the seats will be released.",
+          )
+        )
+          return;
+        b.status = "Cancelled";
+        b.refundStatus = "Requested";
+        b.refund = `${money(b.total)} refund requested via ${b.payment}`;
+        put("easBookings", a);
+        addNotification("admin", "New refund request", `${b.name} requested a refund of ${money(b.total)} for ${b.movie}.`, "refunds");
+        renderBookings();
+      }
+      function account() {
+        let u = get("easSession", null);
+        if (!u) {
+          authform("login");
+          go("auth");
+        } else if (u.role === "admin") admin();
+        else logout();
+      }
+      function authform(m, n = "") {
+        auth.innerHTML =
+          m === "login"
+            ? `<div class="box form auth"><h1>Sign in</h1>${n ? '<div class="notice error">' + n + "</div>" : ""}<div class="field"><label>Email</label><input id="le" type="email"></div><div class="field"><label>Password</label><input id="lp" type="password"><label class="small"><input type="checkbox" onchange="togglePassword('lp', this.checked)"> Show password</label></div><button class="primary" style="width:100%" onclick="login()">SIGN IN</button><div id="amsg"></div><p onclick="authform('signup')" style="text-align:center;cursor:pointer;color:#d65e00"><b>Create customer account</b></p><p onclick="authform('forgot')" style="text-align:center;cursor:pointer;color:#d65e00"><b>Forgot password?</b></p><small>Admin: admin@eascinema.com / admin123</small></div>`
+            : m === "signup"
+              ? `<div class="box form auth"><h1>Create account</h1><div class="field"><label>Full name</label><input id="sn"></div><div class="field"><label>Email</label><input id="se" type="email"></div><div class="field"><label>Password (6+ characters)</label><input id="sp" type="password"></div><div class="field"><label>Confirm password</label><input id="sc" type="password"><label class="small"><input type="checkbox" onchange="toggleSignupPasswords(this.checked)"> Show passwords</label></div><button class="primary" style="width:100%" onclick="signup()">CREATE ACCOUNT</button><div id="amsg"></div><p onclick="authform('login')" style="text-align:center;cursor:pointer;color:#d65e00"><b>Back to sign in</b></p></div>`
+              : `<div class="box form auth"><h1>Reset password</h1><div class="field"><label>Email</label><input id="fe" type="email"></div><button class="primary" onclick="forgot()">SEND RESET LINK</button><div id="amsg"></div></div>`;
+      }
+      function togglePassword(id, shouldShow) {
+        const input = document.getElementById(id);
+        if (input) input.type = shouldShow ? "text" : "password";
+      }
+      function toggleSignupPasswords(shouldShow) {
+        togglePassword("sp", shouldShow);
+        togglePassword("sc", shouldShow);
+      }
+      function am(x, b) {
+        amsg.innerHTML = `<div class="notice ${b ? "error" : "success"}">${x}</div>`;
+      }
+      function login() {
+        let e = le.value.trim().toLowerCase(),
+          u = get("easUsers").find(
+            (x) => x.email === e && x.password === lp.value,
+          );
+        if (!/^\S+@\S+\.\S+$/.test(e) || !lp.value)
+          return am("Email and password are required.", 1);
+        if (!u) return am("Incorrect email or password.", 1);
+        put("easSession", u);
+        setAccount();
+        u.role === "admin" ? admin() : go("home");
+      }
+      function signup() {
+        let n = sn.value.trim(),
+          e = se.value.trim().toLowerCase();
+        if (!/^[A-Za-z][A-Za-z .'-]{1,59}$/.test(n))
+          return am("Enter a valid full name.", 1);
+        if (!/^\S+@\S+\.\S+$/.test(e)) return am("Enter a valid email.", 1);
+        if (sp.value.length < 6)
+          return am("Password needs at least 6 characters.", 1);
+        if (sp.value !== sc.value) return am("Passwords do not match.", 1);
+        let u = get("easUsers");
+        if (u.some((x) => x.email === e))
+          return am("Email already registered.", 1);
+        u.push({ name: n, email: e, password: sp.value, role: "customer" });
+        put("easUsers", u);
+        am("Account created. You can now sign in.");
+      }
+      function forgot() {
+        if (!/^\S+@\S+\.\S+$/.test(fe.value.trim()))
+          return am("Enter a valid email.", 1);
+        am("If an account exists, a reset link was sent.");
+      }
+      function logout() { if (!confirm("Log out of your EAScinema account?")) return; localStorage.removeItem("easSession"); window.adminTab = "overview"; setAccount(); go("home"); }
+      function profileForm(user, adminMode = false) {
+        return `<div class="box settings-card"><header class="settings-banner"><div class="settings-avatar" aria-hidden="true"></div><h1>${adminMode ? "Admin settings" : "Account settings"}</h1><p>Manage your profile details and sign-in security.</p></header><div class="settings-body"><div class="field"><label>Full name</label><input id="profileName" value="${user.name}" maxlength="60"></div><div class="field"><label>Email address</label><input value="${user.email}" readonly></div><div class="field"><label>New password <span class="muted">(leave blank to keep current)</span></label><input id="profilePassword" type="password" minlength="6" placeholder="At least 6 characters"></div><button class="primary" style="width:100%" onclick="saveProfile(${adminMode})">SAVE CHANGES</button><div id="profileMessage"></div></div></div>`;
+      }
+      function profileSettings() { const user=get("easSession",null); if(!user) { authform("login"); go("auth"); return; } document.getElementById("auth").innerHTML=profileForm(user); go("auth"); }
+      function openSettings() { const user=get("easSession",null); if(!user)return; document.getElementById("auth").innerHTML=profileForm(user,user.role==="admin"); go("auth"); }
+      function saveProfile(adminMode=false) { const user=get("easSession",null), name=profileName.value.trim(), password=profilePassword.value; if(!user) return; if(!/^[A-Za-z][A-Za-z .'-]{1,59}$/.test(name)) { profileMessage.innerHTML='<div class="notice error">Enter a valid full name.</div>'; return; } if(password && password.length<6) { profileMessage.innerHTML='<div class="notice error">New password must have at least 6 characters.</div>'; return; } const users=get("easUsers"), stored=users.find(x=>x.email===user.email); if(!stored)return; stored.name=name; if(password)stored.password=password; put("easUsers",users); put("easSession",stored); setAccount(); profileMessage.innerHTML='<div class="notice success">Your account settings were saved.</div>'; }
+      function setAccount() {
+        let u = get("easSession", null);
+        const profileBtn = document.getElementById("profileBtn");
+        const notificationWrap = document.getElementById("notificationWrap");
+        const avatarWrap = document.getElementById("avatarWrap");
+        const avatarMenu = document.getElementById("avatarMenu");
+        // show/hide elements
+        avatarWrap.style.display = u ? 'inline-block' : 'none';
+        profileBtn.style.display = u ? 'inline-grid' : 'none';
+        notificationWrap.style.display = u ? 'block' : 'none';
+        renderNotificationButton();
+        // acct button behaviour: hide for signed-in customers, keep for admin
+        if (!u) {
+          acct.style.display = 'inline-flex';
+          acct.innerHTML = `<span class="cta-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8z" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 20a8 8 0 0 1 16 0" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="cta-text">LOGIN / SIGN UP</span>`;
+          acct.onclick = () => { authform('login'); go('auth'); };
+        } else if (u.role === 'admin') {
+          acct.style.display = 'inline-flex';
+          acct.innerHTML = `<span class="cta-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="3" width="7" height="7" stroke="currentColor" stroke-width="1.4" rx="1"/><rect x="14" y="3" width="7" height="7" stroke="currentColor" stroke-width="1.4" rx="1"/><rect x="3" y="14" width="7" height="7" stroke="currentColor" stroke-width="1.4" rx="1"/></svg></span><span class="cta-text">ADMIN DASHBOARD</span>`;
+          acct.onclick = admin;
+        } else {
+          // hide the orange acct CTA for signed-in customers to reduce redundancy
+          acct.style.display = 'none';
+        }
+        // On small screens, move admin dashboard access into avatar menu
+        function updateAcctVisibility() {
+          const w = window.innerWidth || document.documentElement.clientWidth;
+          if (u && u.role === 'admin') {
+            // hide the top CTA on narrow screens so admin uses avatar menu
+            if (w <= 760) acct.style.display = 'none';
+            else acct.style.display = 'inline-flex';
+          }
+        }
+        updateAcctVisibility();
+        if (!window._easAcctResizeBound) {
+          window.addEventListener('resize', updateAcctVisibility);
+          window._easAcctResizeBound = true;
+        }
+        // build avatar menu
+        if (u) {
+          // set avatar to person SVG and tooltip
+          profileBtn.innerHTML = `<svg class="avatar-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8z" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 20a8 8 0 0 1 16 0" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+          profileBtn.title = u.name || u.email;
+
+          // build improved menu with header
+          avatarMenu.innerHTML = `<div class="avatar-menu-head"><div class="avatar-menu-name">${u.name || 'Account'}` + (u.role==='admin'?`<span class="role-badge">ADMIN</span>`:'') + `</div><div class="avatar-menu-email">${u.email}</div></div><div class="btn-row"></div>`;
+          const row = avatarMenu.querySelector('.btn-row');
+          if (u.role === 'admin') {
+            row.insertAdjacentHTML('beforeend', `<button onclick="admin()">Admin dashboard</button>`);
+          }
+          row.insertAdjacentHTML('beforeend', `<button onclick="openSettings()">Profile</button>`);
+          row.insertAdjacentHTML('beforeend', `<button onclick="logout()">Log out</button>`);
+        }
+      }
+
+      function toggleAvatarMenu() {
+        const menu = document.getElementById('avatarMenu');
+        if (!menu) return;
+        // close other menus first for tidy behavior on mobile
+        try { const nm = document.getElementById('notificationMenu'); if (nm) { nm.style.display='none'; nm.classList.remove('open'); } } catch(e){}
+        try { const mm = document.getElementById('mobileMenu'); if (mm) { mm.style.display='none'; mm.classList.remove('open'); } } catch(e){}
+        const shown = menu.style.display === 'block';
+        if (shown) { menu.style.display = 'none'; menu.classList.remove('open'); hideBackdrop(); }
+        else {
+          const btn = document.querySelector('#avatarWrap .avatar-btn');
+          positionMenu(menu, btn);
+          menu.style.display = 'block'; setTimeout(()=>menu.classList.add('open'),10);
+          showBackdrop();
+        }
+      }
+      function setAdminTab(tab) { window.adminTab = tab; admin(); }
+      function renderAdminPortal(a) {
+        const tab = window.adminTab || "overview";
+        const paid = a.filter(x => x.paymentStatus === "Approved" && x.refundStatus !== "Approved");
+        const pending = a.filter(x => x.paymentStatus === "Pending approval");
+        const refunds = a.filter(x => x.refundStatus === "Requested");
+        const catalogue = [...films.map((x,i)=>({x,i,t:"now"})), ...future.map((x,i)=>({x,i,t:"soon"}))];
+        const nav = [["overview","Overview"],["sales","Total sales"],["catalogue","Movie catalog"],["payments",`Payment approvals (${pending.length})`],["refunds",`Cancellations (${refunds.length})`],["bookings","All bookings"]];
+        const stats = `<div class="stats"><div class="stat"><b>${paid.length}</b>Paid bookings</div><div class="stat"><b>${a.length}</b>Total bookings</div><div class="stat"><b>${money(paid.reduce((s,x)=>s+x.total,0))}</b>Net sales</div><div class="stat"><b>${refunds.length}</b>Refund requests</div></div>`;
+        let page = "";
+        if (tab === "overview") page = `<div class="admin-page-head"><div><h2>Overview</h2><p class="muted">A quick view of your cinema operations.</p></div><span class="badge">LIVE STATUS</span></div>${stats}<div class="overview-panels"><article class="overview-card"><h3>Action center</h3><p class="muted">Review the items that need your attention today.</p><div class="queue-row"><span>Payment approvals waiting</span><b>${pending.length}</b></div><div class="queue-row"><span>Refund requests waiting</span><b>${refunds.length}</b></div><div class="queue-row"><span>Movies currently showing</span><b>${films.length}</b></div></article><article class="overview-card"><h3>Quick actions</h3><p class="muted">Keep the public cinema experience current.</p><div class="admin-actions" style="margin-top:16px"><button class="primary" onclick="setAdminTab('catalogue')">Manage movies</button><button class="choice" onclick="setAdminTab('payments')">Review payments</button></div></article></div>`;
+        if (tab === "sales") page = `<div class="admin-page-head"><div><h2>Total sales</h2><p class="muted">Only approved payments that have not been refunded are counted.</p></div></div>${stats}<div style="overflow:auto;margin-top:22px"><table class="table"><thead><tr><th>Reference</th><th>Movie</th><th>Customer</th><th>Payment</th><th>Sale</th></tr></thead><tbody>${paid.length?paid.map(x=>`<tr><td>${x.ref}</td><td>${x.movie}</td><td>${x.name}</td><td>${x.payment}</td><td>${money(x.total)}</td></tr>`).join(''):'<tr><td colspan="5">No approved sales yet.</td></tr>'}</tbody></table></div>`;
+        if (tab === "catalogue") page = `<div class="admin-page-head"><div><h2>Movie catalog</h2><p class="muted">Add, edit, remove, or move movies between public lists.</p></div><button class="primary add-movie-btn" onclick="openAddMovie()"><span>+</span> ADD MOVIE</button></div><div style="overflow:auto"><table class="table"><thead><tr><th>Movie</th><th>Placement</th><th>Details</th><th>Actions</th></tr></thead><tbody>${catalogue.map(({x,i,t})=>`<tr><td><b>${t==='now'?x[1]:x[0]}</b><br><small>${t==='now'?x[2]:x[1]}</small></td><td><span class="badge">${t==='now'?'Now showing':'Coming soon'}</span></td><td>${t==='now'?`${x[3]} • ${money(x[5])}`:x[2]}</td><td><div class="admin-actions"><button class="choice" onclick="editMovie('${t}',${i})">Edit</button><button class="danger" onclick="removeMovie('${t}',${i})">Remove</button></div></td></tr>`).join('')}</tbody></table></div>`;
+        if (tab === "payments") page = `<div class="admin-page-head"><div><h2>Payment approvals</h2><p class="muted">Approve only after confirming the submitted payment reference.</p></div><span class="badge">${pending.length} pending</span></div><div style="overflow:auto"><table class="table"><thead><tr><th>Reference</th><th>Customer</th><th>Payment proof</th><th>Total</th><th>Decision</th></tr></thead><tbody>${pending.length?pending.map(x=>`<tr><td>${x.ref}<br><small>${x.movie}</small></td><td>${x.name}<br><small>${x.email}</small></td><td>${x.payment}<br><small>${x.paymentReference||'No reference'}</small></td><td>${money(x.total)}</td><td><div class="admin-actions"><button class="primary" onclick="reviewPayment('${x.ref}',true)">Approve</button><button class="danger" onclick="reviewPayment('${x.ref}',false)">Decline</button></div></td></tr>`).join(''):'<tr><td colspan="5">No payments waiting for approval.</td></tr>'}</tbody></table></div>`;
+        if (tab === "refunds") page = `<div class="admin-page-head"><div><h2>Cancellations & refunds</h2><p class="muted">Customer cancellations appear here automatically as refund requests.</p></div><span class="badge">${refunds.length} requested</span></div><div style="overflow:auto"><table class="table"><thead><tr><th>Reference</th><th>Customer / movie</th><th>Amount</th><th>Status</th><th>Decision</th></tr></thead><tbody>${refunds.length?refunds.map(x=>`<tr><td>${x.ref}</td><td>${x.name}<br><small>${x.movie}</small></td><td>${money(x.total)} via ${x.payment}</td><td>${x.refund}</td><td><div class="admin-actions"><button class="primary" onclick="reviewRefund('${x.ref}',true)">Approve refund</button><button class="danger" onclick="reviewRefund('${x.ref}',false)">Decline</button></div></td></tr>`).join(''):'<tr><td colspan="5">No refund requests waiting for review.</td></tr>'}</tbody></table></div>`;
+        if (tab === "bookings") page = `<div class="admin-page-head"><div><h2>All bookings</h2><p class="muted">Complete history of customer bookings and their current status.</p></div></div><div style="overflow:auto"><table class="table"><thead><tr><th>Reference</th><th>Customer</th><th>Movie / schedule</th><th>Seats</th><th>Total</th><th>Payment / refund</th></tr></thead><tbody>${a.length?a.map(x=>`<tr><td>${x.ref}</td><td>${x.name}<br><small>${x.email}</small></td><td>${x.movie}<br><small>${x.date} ${x.time}</small></td><td>${x.seats.join(', ')}</td><td>${money(x.total)}</td><td><b>${x.paymentStatus||x.status}</b><br><small>${x.refund||'Not requested'}</small></td></tr>`).join(''):'<tr><td colspan="6">No bookings yet.</td></tr>'}</tbody></table></div>`;
+        document.getElementById("admin").innerHTML = `<h2 class="title">ADMIN DASHBOARD</h2><div class="admin-shell"><aside class="admin-nav">${nav.map(([id,label])=>`<button class="${tab===id?'active':''}" onclick="setAdminTab('${id}')">${label}</button>`).join('')}</aside><section>${page}</section></div>`;
+        go("admin");
+      }
+      function renderAdminDashboard(a) {
+        return renderAdminPortal(a);
+        const paid = a.filter(x => x.paymentStatus === "Approved" && x.refundStatus !== "Approved");
+        const pending = a.filter(x => x.paymentStatus === "Pending approval");
+        const refunds = a.filter(x => x.refundStatus === "Requested");
+        const catalogue = [...films.map((x,i)=>({x,i,t:"now"})), ...future.map((x,i)=>({x,i,t:"soon"}))];
+        document.getElementById("admin").innerHTML = `<h2 class="title">ADMIN DASHBOARD</h2><p class="muted">Verify payment submissions, manage refund requests, update the movie catalogue, and track approved sales.</p>
+        <div class="stats"><div class="stat"><b>${paid.length}</b>Paid bookings</div><div class="stat"><b>${a.length}</b>Total bookings</div><div class="stat"><b>${money(paid.reduce((s,x)=>s+x.total,0))}</b>Net sales</div><div class="stat"><b>${refunds.length}</b>Refund requests</div></div>
+        <div class="admin-grid"><section class="box form"><h2 id="movieFormTitle">Add a movie</h2><input type="hidden" id="movieEditType"><input type="hidden" id="movieEditIndex"><div class="field"><label>Display status</label><select id="movieStatus"><option value="now">Now showing</option><option value="soon">Coming soon</option></select></div><div class="field"><label>Title</label><input id="movieTitle" maxlength="80"></div><div class="field"><label>Genre</label><input id="movieGenre" maxlength="80"></div><div class="field"><label>Duration / release message</label><input id="movieInfo" placeholder="2h 00m or Coming October"></div><div class="field"><label>Rating (now showing)</label><input id="movieRating" placeholder="PG"></div><div class="field"><label>Ticket price, PHP (now showing)</label><input id="moviePrice" type="number" min="1"></div><div class="field"><label>Poster image URL</label><input id="moviePoster" type="url" placeholder="https://..."></div><div class="field"><label>Synopsis (now showing)</label><input id="movieSynopsis"></div><button class="primary" onclick="saveMovie()">SAVE MOVIE</button> <button class="choice" onclick="clearMovieForm()">CLEAR</button><div id="movieMessage"></div></section><section><h2>Movie catalogue</h2><div style="overflow:auto"><table class="table"><thead><tr><th>Movie</th><th>Placement</th><th>Actions</th></tr></thead><tbody>${catalogue.map(({x,i,t})=>`<tr><td><b>${t==='now'?x[1]:x[0]}</b><br><small>${t==='now'?x[2]:x[1]}</small></td><td><span class="badge">${t==='now'?'Now showing':'Coming soon'}</span></td><td><div class="admin-actions"><button class="choice" onclick="editMovie('${t}',${i})">Edit</button><button class="danger" onclick="removeMovie('${t}',${i})">Remove</button></div></td></tr>`).join('')}</tbody></table></div></section></div>
+        <section class="admin-section"><h2 class="title">PAYMENT APPROVALS <span class="badge">${pending.length} pending</span></h2><div style="overflow:auto"><table class="table"><thead><tr><th>Reference</th><th>Customer</th><th>Payment proof</th><th>Total</th><th>Decision</th></tr></thead><tbody>${pending.length ? pending.map(x=>`<tr><td>${x.ref}<br><small>${x.movie}</small></td><td>${x.name}<br><small>${x.email}</small></td><td>${x.payment}<br><small>${x.paymentReference||'No reference'}</small></td><td>${money(x.total)}</td><td><div class="admin-actions"><button class="primary" onclick="reviewPayment('${x.ref}',true)">Approve</button><button class="danger" onclick="reviewPayment('${x.ref}',false)">Decline</button></div></td></tr>`).join(''):'<tr><td colspan="5">No payments waiting for approval.</td></tr>'}</tbody></table></div></section>
+        <section class="admin-section"><h2 class="title">CANCELLATIONS & REFUNDS <span class="badge">${refunds.length} requested</span></h2><div style="overflow:auto"><table class="table"><thead><tr><th>Reference</th><th>Customer / movie</th><th>Amount</th><th>Status</th><th>Decision</th></tr></thead><tbody>${refunds.length ? refunds.map(x=>`<tr><td>${x.ref}</td><td>${x.name}<br><small>${x.movie}</small></td><td>${money(x.total)} via ${x.payment}</td><td>${x.refund}</td><td><div class="admin-actions"><button class="primary" onclick="reviewRefund('${x.ref}',true)">Approve refund</button><button class="danger" onclick="reviewRefund('${x.ref}',false)">Decline</button></div></td></tr>`).join(''):'<tr><td colspan="5">No refund requests waiting for review.</td></tr>'}</tbody></table></div></section>
+        <section class="admin-section"><h2 class="title">ALL BOOKINGS</h2><div style="overflow:auto"><table class="table"><thead><tr><th>Reference</th><th>Customer</th><th>Movie</th><th>Total</th><th>Payment / refund</th></tr></thead><tbody>${a.length ? a.map(x=>`<tr><td>${x.ref}</td><td>${x.name}<br><small>${x.email}</small></td><td>${x.movie}<br><small>${x.date} ${x.time}</small></td><td>${money(x.total)}</td><td><b>${x.paymentStatus||x.status}</b><br><small>${x.refund||'Not requested'}</small></td></tr>`).join(''):'<tr><td colspan="5">No bookings yet.</td></tr>'}</tbody></table></div></section>`;
+        go("admin");
+      }
+      function openAddMovie() { document.body.insertAdjacentHTML('beforeend',`<div class="modal-backdrop" id="appModal" onclick="if(event.target===this)closeModal()"><section class="modal"><header class="modal-head"><h2>Add movie</h2><button class="modal-close" onclick="closeModal()" aria-label="Close">×</button></header><div class="form"><div class="field"><label>Display status</label><select id="movieStatus"><option value="now">Now showing</option><option value="soon">Coming soon</option></select></div><div class="field"><label>Title</label><input id="movieTitle" maxlength="80"></div><div class="field"><label>Genre</label><input id="movieGenre" maxlength="80"></div><div class="field"><label>Duration / release message</label><input id="movieInfo" placeholder="2h 00m or Coming October"></div><div class="field"><label>Rating (now showing)</label><input id="movieRating" placeholder="PG"></div><div class="field"><label>Ticket price, PHP (now showing)</label><input id="moviePrice" type="number" min="1"></div><div class="field"><label>Poster image URL</label><input id="moviePoster" type="url" placeholder="https://..."></div><div class="field"><label>Synopsis (now showing)</label><input id="movieSynopsis"></div><div id="movieMessage"></div><button class="primary" onclick="saveMovie()">SAVE MOVIE</button> <button class="choice" onclick="closeModal()">CANCEL</button></div></section></div>`); }
+      function clearMovieForm() { [movieTitle,movieGenre,movieInfo,movieRating,moviePrice,moviePoster,movieSynopsis].forEach(x=>x.value=""); movieStatus.value="now"; movieMessage.innerHTML=""; }
+      function editMovie(t,i) { const x=(t==='now'?films:future)[i], title=t==='now'?x[1]:x[0], genre=t==='now'?x[2]:x[1], info=t==='now'?x[3]:x[2], rating=t==='now'?x[4]:'' ,price=t==='now'?x[5]:'' ,poster=t==='now'?x[6]:x[3], synopsis=t==='now'?x[7]:''; document.body.insertAdjacentHTML('beforeend',`<div class="modal-backdrop" id="appModal" onclick="if(event.target===this)closeModal()"><section class="modal"><header class="modal-head"><h2>Edit movie</h2><button class="modal-close" onclick="closeModal()" aria-label="Close">×</button></header><div class="form"><div class="field"><label>Display status</label><select id="editMovieStatus"><option value="now">Now showing</option><option value="soon">Coming soon</option></select></div><div class="field"><label>Title</label><input id="editMovieTitle" value="${title}"></div><div class="field"><label>Genre</label><input id="editMovieGenre" value="${genre}"></div><div class="field"><label>Duration / release message</label><input id="editMovieInfo" value="${info}"></div><div class="field"><label>Rating (now showing)</label><input id="editMovieRating" value="${rating}"></div><div class="field"><label>Ticket price, PHP (now showing)</label><input id="editMoviePrice" type="number" min="1" value="${price}"></div><div class="field"><label>Poster image URL</label><input id="editMoviePoster" type="url" value="${poster}"></div><div class="field"><label>Synopsis (now showing)</label><input id="editMovieSynopsis" value="${synopsis}"></div><div id="editMovieMessage"></div><button class="primary" onclick="saveMovieEdit('${t}',${i})">SAVE CHANGES</button> <button class="choice" onclick="closeModal()">CANCEL</button></div></section></div>`); document.getElementById('editMovieStatus').value=t; }
+      function saveMovieEdit(oldType,index) { const t=editMovieStatus.value,title=editMovieTitle.value.trim(),genre=editMovieGenre.value.trim(),info=editMovieInfo.value.trim(),poster=editMoviePoster.value.trim(),price=Number(editMoviePrice.value),rating=editMovieRating.value.trim(),synopsis=editMovieSynopsis.value.trim(); if(!title||!genre||!info||!poster||(t==='now'&&(!price||!rating))) { editMovieMessage.innerHTML='<div class="notice error">Complete all required fields. Rating and ticket price are required for now showing.</div>'; return; } const old=(oldType==='now'?films:future)[index], id=oldType==='now'?old[0]:`movie-${Date.now()}`; (oldType==='now'?films:future).splice(index,1); (t==='now'?films:future).push(t==='now'?[id,title,genre,info,rating,price,poster,synopsis]:[title,genre,info,poster]); put('easMoviesNow',films); put('easMoviesSoon',future); searchNowShowing(''); searchComingSoon(''); closeModal(); admin(); }
+      function saveMovie() { const t=movieStatus.value,title=movieTitle.value.trim(),genre=movieGenre.value.trim(),info=movieInfo.value.trim(),poster=moviePoster.value.trim(),price=Number(moviePrice.value); if(!title||!genre||!info||!poster||(t==='now'&&(!price||!movieRating.value.trim()))) { movieMessage.innerHTML='<div class="notice error">Complete all required fields. Rating and ticket price are required for now showing.</div>'; return; } (t==='now'?films:future).push(t==='now'?[`movie-${Date.now()}`,title,genre,info,movieRating.value.trim(),price,poster,movieSynopsis.value.trim()]:[title,genre,info,poster]); put('easMoviesNow',films); put('easMoviesSoon',future); searchNowShowing(''); searchComingSoon(''); closeModal(); admin(); }
+      function removeMovie(t,i) { const list=t==='now'?films:future,title=t==='now'?list[i][1]:list[i][0]; if(!confirm(`Remove “${title}”?`)) return; list.splice(i,1); put('easMoviesNow',films); put('easMoviesSoon',future); searchNowShowing(''); searchComingSoon(''); admin(); }
+      function reviewPayment(ref,ok) { const a=get('easBookings'),b=a.find(x=>x.ref===ref); if(!b)return; b.paymentStatus=ok?'Approved':'Declined'; b.status=ok?'Confirmed':'Payment declined'; if(!ok)b.refund='Payment declined — no charge approved'; put('easBookings',a); if(b && b.email) addNotification(b.email, ok? 'Payment approved' : 'Payment declined', ok? `Your payment for ${b.movie} (${b.ref}) was approved.` : `Your payment for ${b.movie} (${b.ref}) was declined.`, 'bookings'); admin(); }
+      function reviewRefund(ref,ok) { const a=get('easBookings'),b=a.find(x=>x.ref===ref); if(!b)return; b.refundStatus=ok?'Approved':'Declined'; b.refund=ok?`${money(b.total)} refund approved via ${b.payment}`:'Refund request declined'; put('easBookings',a); if(b && b.email) addNotification(b.email, ok? 'Refund approved' : 'Refund declined', ok? `Your refund for ${b.movie} (${b.ref}) was approved.` : `Your refund request for ${b.movie} (${b.ref}) was declined.`, 'bookings'); admin(); }
+      function admin() {
+        let u = get("easSession", null);
+        if (!u || u.role !== "admin") {
+          authform("login", "Admin access only.");
+          go("auth");
+          return;
+        }
+        let a = get("easBookings"),
+          c = a.filter((x) => x.status === "Confirmed"),
+          r = c.reduce((s, x) => s + x.total, 0);
+        return renderAdminDashboard(a);
+        admin.innerHTML = `<h2 class="title">ADMIN DASHBOARD</h2><div class="stats"><div class="stat"><b>${c.length}</b>Confirmed bookings</div><div class="stat"><b>${a.length}</b>Total bookings</div><div class="stat"><b>₱${r.toFixed(0)}</b>Revenue</div><div class="stat"><b>${a.filter((x) => x.status === "Cancelled").length}</b>Refund requests</div></div><div style="overflow:auto"><table class="table"><thead><tr><th>Reference</th><th>Customer</th><th>Movie / schedule</th><th>Seats</th><th>Total</th><th>Status</th></tr></thead><tbody>${a.length ? a.map((x) => `<tr><td>${x.ref}</td><td>${x.name}<br><small>${x.email}</small></td><td>${x.movie}<br><small>${x.date} ${x.time}</small></td><td>${x.seats.join(", ")}</td><td>₱${x.total.toFixed(2)}</td><td>${x.status}<br><small>${x.refund}</small></td></tr>`).join("") : '<tr><td colspan="6">No bookings yet.</td></tr>'}</tbody></table></div>`;
+        go("admin");
+      }
+      init();
+    </script>
+  </body>
+</html>
