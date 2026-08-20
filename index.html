@@ -98,7 +98,7 @@
           border-radius: 50%;
         }
       }
-      .mobile-menu { display:none; position:fixed; top:62px; left:8px; right:8px; z-index:70; background:#fff; border-radius:10px; box-shadow:0 18px 50px #0006; padding:8px; border:1px solid #e7e9ee; transform:translateY(-6px); opacity:0; }
+      .mobile-menu { display:none; position:fixed; top:62px; left:8px; right:8px; z-index:70; background:#fff; border-radius:14px; box-shadow:0 18px 42px #0005; padding:8px; border:1px solid #e7e9ee; transform:translateY(-6px); opacity:0; }
       .mobile-menu button { display:block; width:100%; padding:12px 14px; text-align:left; background:transparent; border:0; font-weight:800; color:#222; border-radius:8px; }
       .mobile-menu button:hover { background:#fff7ef; }
       .mobile-menu .nav-row { display:flex; gap:8px; }
@@ -695,18 +695,19 @@
       .avatar-menu-head { padding:12px 16px; background:#fff; border-bottom:1px solid #f2f3f6; }
       .avatar-menu-name { font-weight:800; color:#222; }
       .avatar-menu-email { font-size:12px; color:#6b7178; margin-top:4px; }
-      .avatar-menu .btn-row { display:flex; flex-direction:column; }
+      .avatar-menu .btn-row { display:flex; flex-direction:column; padding:6px; gap:2px; }
       .avatar-menu .btn-row button { padding:12px 16px; text-align:left; background:transparent; border:0; font-weight:700; color:#222; }
-      .avatar-menu .btn-row button + button { border-top:1px solid #f2f3f6; }
+      .avatar-menu .btn-row button + button { border-top:0; }
       .avatar-menu .role-badge { display:inline-block; background:#fff6ea; color:#a94e00; padding:6px 8px; border-radius:999px; font-size:11px; font-weight:800; margin-left:8px; }
       .avatar-wrap { position:relative; display:inline-block; }
-      .avatar-menu { position:absolute; right:0; top:52px; z-index:30; min-width:200px; background:#fff; color:#1f232b; border-radius:10px; box-shadow:0 12px 36px #0004; border:1px solid #e7e9ee; overflow:hidden; padding:8px 0; }
+      .avatar-menu { position:absolute; right:0; top:52px; z-index:30; min-width:200px; background:#fff; color:#1f232b; border-radius:14px; box-shadow:0 18px 42px #0005; border:1px solid #e7e9ee; overflow:hidden; padding:8px 0; }
       .avatar-menu { transition: transform .18s ease, opacity .18s ease; transform-origin: top right; transform: translateY(-6px); opacity: 0; }
       .avatar-menu.open { transform: translateY(0); opacity: 1; }
-      .avatar-menu::before { content:""; position:absolute; right:18px; top:-6px; width:12px; height:12px; background:#fff; transform:rotate(45deg); box-shadow:-1px -1px 0 0 #e7e9ee; }
+      .avatar-menu::before { display:none; }
       .avatar-menu button { display:block; width:100%; padding:12px 16px; text-align:left; background:transparent; border:0; font-weight:700; color:#222; }
       .avatar-menu button + button { border-top:1px solid #f2f3f6; }
       .avatar-menu button:hover { background:#fff7ef; }
+      .avatar-menu .btn-row button { border-radius:8px; }
       .avatar-menu .guest-auth-card { padding:18px; }
       .guest-auth-eyebrow { display:block; margin-bottom:7px; color:#a94e00; font-size:10px; font-weight:800; letter-spacing:1px; }
       .guest-auth-card strong { display:block; color:#20232b; font-size:17px; }
@@ -719,11 +720,11 @@
       .notification-btn svg { width:18px; height:18px; color:currentColor; }
       .notification-btn:hover { background:#ffffff25; }
       .notification-count { position:absolute; min-width:17px; height:17px; padding:1px 4px; right:-4px; top:-4px; border-radius:10px; background:#ff7900; color:#111; font-size:10px; font-weight:bold; }
-      .notification-menu { position:absolute; right:0; top:47px; z-index:30; width:min(380px,calc(100vw - 30px)); max-height:460px; overflow:auto; background:#fff; color:#1f232b; border-radius:12px; box-shadow:0 16px 42px #0004; border:1px solid #e7e9ee; }
+      .notification-menu { position:absolute; right:0; top:47px; z-index:30; width:min(380px,calc(100vw - 30px)); max-height:460px; overflow:auto; background:#fff; color:#1f232b; border-radius:14px; box-shadow:0 18px 42px #0005; border:1px solid #e7e9ee; }
       .notification-menu { transition: transform .18s ease, opacity .18s ease; transform-origin: top right; transform: translateY(-6px); opacity: 0; }
       .notification-menu.open { transform: translateY(0); opacity: 1; }
       .menu-pointer { position:absolute; top:-7px; width:12px; height:12px; background:#fff; transform:rotate(45deg); box-shadow:-1px -1px 0 0 #e7e9ee; border-radius:2px; }
-      .notification-menu header { display:flex; justify-content:space-between; align-items:center; padding:15px 16px 11px; border-bottom:1px solid #e9ebef; }
+      .notification-menu header { display:flex; justify-content:space-between; align-items:center; padding:15px 16px 11px; background:#fffaf5; border-bottom:1px solid #e9ebef; }
       .notification-menu header b { font-size:15px; }
       .notification-item { width:100%; padding:13px 16px; text-align:left; background:#fff; border-bottom:1px solid #eff0f3; }
       .notification-item:hover { background:#fff7ef; }
@@ -1177,9 +1178,12 @@
         // Guest account popovers are intentionally more compact than list menus.
         const vw = Math.max(document.documentElement.clientWidth || 320, window.innerWidth || 320);
         const guestAuthMenu = menu.id === 'avatarMenu' && menu.querySelector('.guest-auth-card');
+        const compactMenu = menu.id === 'avatarMenu' || menu.id === 'mobileMenu';
         const desired = guestAuthMenu
           ? Math.min(260, Math.max(220, vw - 32))
-          : Math.min(320, Math.max(200, vw - 40));
+          : compactMenu
+            ? Math.min(250, Math.max(210, vw - 32))
+            : Math.min(320, Math.max(200, vw - 40));
         menu.style.width = desired + 'px';
         // position fixed so dropdown is not clipped by parent containers and stays above backdrop
         menu.style.position = 'fixed';
