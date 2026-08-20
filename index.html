@@ -1023,9 +1023,16 @@
       function syncMovies() {
         const savedNow = get("easMoviesNow", null);
         const savedSoon = get("easMoviesSoon", null);
+        const oakStreetPoster = films.find((movie) => movie[0] === "oak-street")[6];
         const oldDemoIds = new Set(["space", "case", "summit", "signal", "afterglow", "velocity", "orbit", "perfect"]);
         const hasOldDemoCatalog = savedNow?.some((movie) => oldDemoIds.has(movie[0]));
-        if (savedNow && !hasOldDemoCatalog) films.splice(0, films.length, ...savedNow);
+        if (savedNow && !hasOldDemoCatalog) {
+          savedNow.forEach((movie) => {
+            if (movie[0] === "oak-street") movie[6] = oakStreetPoster;
+          });
+          films.splice(0, films.length, ...savedNow);
+          put("easMoviesNow", savedNow);
+        }
         else put("easMoviesNow", films);
         const hasOldDemoSoon = savedSoon?.some((movie) => ["Echoes of Summer", "Titan Force", "The Wild Road", "Velvet Curtain"].includes(movie[0]));
         if (savedSoon && !hasOldDemoSoon) future.splice(0, future.length, ...savedSoon);
