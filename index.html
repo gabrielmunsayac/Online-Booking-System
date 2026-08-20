@@ -113,11 +113,11 @@
         .logo { order: 1; }
         .links { order: 2; }
         .cta { order: 3; }
-        /* Left-to-right: avatar, notifications, then the menu button. */
-        .avatar-wrap { order: 4; margin-left:auto; margin-right:0; }
-        .notification-wrap { order: 5; margin-left:0; margin-right:0; }
-        .mobile-toggle { order: 6; margin-left:0; margin-right:2px; }
-        nav { gap: 10px; align-items: center; }
+        /* Keep the account controls together at the right edge. */
+        .notification-wrap { order: 4; margin-left:auto; margin-right:0; }
+        .mobile-toggle { order: 5; margin-left:0; margin-right:0; }
+        .avatar-wrap { order: 6; margin-left:0; margin-right:0; }
+        nav { gap: 10px; align-items: center; justify-content: flex-start; }
         .notification-wrap, .avatar-wrap, .mobile-toggle { display:inline-flex; }
       }
       /* compact admin on small screens */
@@ -754,7 +754,7 @@
           display: none;
         }
         .mobile-toggle { display:inline-flex; align-items:center; justify-content:center; }
-        nav { justify-content: space-between; height:64px; }
+        nav { justify-content: flex-start; height:64px; }
         .cta { padding:8px 10px; font-size:13px; }
         .grid {
           grid-template-columns: repeat(2, 1fr);
