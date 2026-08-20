@@ -216,13 +216,18 @@
         box-shadow: 0 5px 18px #0001;
         overflow: hidden;
       }
+      /* Ensure poster images are consistently sized and not stretched */
       .poster {
         width:100%;
-        height: 360px; /* fixed tile height for uniform grid */
+        /* A fixed portrait frame keeps every artwork tile the same height.
+           `cover` crops gently when an uploaded image is not poster-shaped. */
+        aspect-ratio: 2 / 3;
+        overflow: hidden;
         background-position: center;
         background-size: cover;
-        flex: 0 0 360px;
+        background-repeat: no-repeat;
       }
+      /* The card's content area */
       .card div:last-child {
         padding: 14px;
         display:flex;
@@ -288,9 +293,7 @@
       }
       /* strong selector to ensure poster tiles use portrait sizing */
       .card > .poster, .grid .poster {
-        height: 360px !important; /* enforce equal heights */
-        min-height: 0 !important;
-        max-height: none !important;
+        aspect-ratio: 2 / 3;
         background-size: cover !important;
         background-position: center !important;
         display: block !important;
@@ -585,7 +588,6 @@
       }
       @media (max-width: 420px) {
         .hero h1 { font-size: 22px; }
-        .poster { max-height: 360px; min-height: 180px; }
         .notification-count { right:-6px; top:-6px; }
         .avatar-btn { width:34px; height:34px; }
         /* on very narrow screens allow menus to occupy centered width */
@@ -719,8 +721,11 @@
       .settings-card .field input[readonly] { background:#f4f5f7; color:#69717c; }
       @media (max-width: 760px) { .admin-shell { grid-template-columns:1fr; } .admin-nav { min-height:0; height:auto; position:static; display:flex; flex-direction:row; overflow:auto; } .admin-nav::before { display:none; } .admin-nav button { min-width:max-content; } .overview-panels { grid-template-columns:1fr; } }
       @media (max-width: 760px) {
-        .grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap:16px; }
+        /* Two balanced cards fit on phones without making the posters tall,
+           narrow strips.  Both movie lists use this shared grid. */
+        #showing.grid, #upcoming.grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; padding: 0; }
         .card { width:100%; }
+        #showing .poster, #upcoming .poster { aspect-ratio: 2 / 3; }
       }
       @media (max-width: 900px) { .admin-grid { grid-template-columns:1fr; } }
       .footer {
