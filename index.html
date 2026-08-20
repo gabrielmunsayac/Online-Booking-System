@@ -1680,9 +1680,10 @@
         try {
           const mobileBtn = document.getElementById('mobileMenuBtn');
           if (!u) {
-            if (notificationWrap) { notificationWrap.style.marginLeft = 'auto'; notificationWrap.style.marginRight = '0'; }
-            if (mobileBtn) { mobileBtn.style.marginLeft = '0'; mobileBtn.style.marginRight = '6px'; }
-            if (avatarWrap) { avatarWrap.style.marginLeft = '0'; avatarWrap.style.marginRight = '8px'; }
+            if (notificationWrap) { notificationWrap.style.marginLeft = '0'; notificationWrap.style.marginRight = '0'; }
+            if (mobileBtn) { mobileBtn.style.marginLeft = '0'; mobileBtn.style.marginRight = '0'; }
+            // Notifications are hidden for guests, so the avatar anchors this pair.
+            if (avatarWrap) { avatarWrap.style.marginLeft = 'auto'; avatarWrap.style.marginRight = '0'; }
           } else {
             // clear inline overrides so CSS rules take effect when signed in
             if (notificationWrap) { notificationWrap.style.marginLeft = ''; notificationWrap.style.marginRight = ''; }
