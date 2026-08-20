@@ -800,9 +800,12 @@
         }
         .seatbox {
           padding: 14px 12px 18px;
+          width:100%;
+          max-width:350px;
+          margin:0 auto;
         }
-        .screen { padding:8px 6px; font-size:14px; }
-        .screen small { font-size:11px; }
+        .screen { padding:8px 10px; font-size:14px; overflow:hidden; }
+        .screen small { display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:11px; }
         .plan { margin:22px auto 20px; }
         .row {
           grid-template-columns:20px minmax(0, 1fr) 18px minmax(0, 1fr);
@@ -812,7 +815,7 @@
         .sets {
           gap:3px;
         }
-        .seat { height:29px; border-radius:6px 6px 3px 3px; font-size:9px; }
+        .seat { height:30px; border-radius:6px 6px 3px 3px; font-size:10px; }
         .legend { display:flex; justify-content:center; align-items:center; flex-wrap:wrap; gap:7px; font-size:12px; }
         .dot { margin:0 2px 0 0; width:12px; height:12px; }
         .hint { max-width:230px; margin:18px auto 0; font-size:14px; line-height:1.35; }
@@ -1335,7 +1338,7 @@
         go("booking");
       }
       function s(x, o) {
-        return `<button ${o.includes(x) ? "disabled" : ""} class="seat ${o.includes(x) ? "occupied" : ""}" onclick="toggle('${x}')">${x}</button>`;
+        return `<button ${o.includes(x) ? "disabled" : ""} data-seat="${x}" class="seat ${o.includes(x) ? "occupied" : ""}" onclick="toggle('${x}')">${x.slice(1)}</button>`;
       }
       function toggle(x) {
         seats = seats.includes(x)
@@ -1346,7 +1349,7 @@
         document
           .querySelectorAll(".seat")
           .forEach((b) =>
-            b.classList.toggle("selected", seats.includes(b.textContent)),
+            b.classList.toggle("selected", seats.includes(b.dataset.seat)),
           );
         totals();
       }
