@@ -804,6 +804,8 @@
           max-width:350px;
           margin:0 auto;
         }
+        /* Give the seat map extra room without affecting the other pages. */
+        #booking .bookgrid { margin-left:-10px; margin-right:-10px; }
         .screen { padding:8px 10px; font-size:14px; overflow:hidden; }
         .screen small { display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:11px; }
         .plan { margin:22px auto 20px; }
@@ -1338,7 +1340,7 @@
         go("booking");
       }
       function s(x, o) {
-        return `<button ${o.includes(x) ? "disabled" : ""} data-seat="${x}" class="seat ${o.includes(x) ? "occupied" : ""}" onclick="toggle('${x}')">${x.slice(1)}</button>`;
+        return `<button ${o.includes(x) ? "disabled" : ""} data-seat="${x}" class="seat ${o.includes(x) ? "occupied" : ""}" onclick="toggle('${x}')">${x}</button>`;
       }
       function toggle(x) {
         seats = seats.includes(x)
