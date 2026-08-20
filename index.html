@@ -522,7 +522,11 @@
         margin: 8px 0;
       }
       .payment-actions { display:grid; gap:10px; margin-top:16px; }
-      .payment-actions button { width:100%; margin:0 !important; }
+      .payment-actions button { display:flex; align-items:center; justify-content:center; width:100%; min-height:48px; margin:0 !important; border-radius:8px; font-weight:800; transition:transform .18s ease, box-shadow .18s ease, background .18s ease; }
+      .payment-actions .primary { background:linear-gradient(135deg, #ff8a17, #ff6f00); box-shadow:0 7px 14px #ff790038; }
+      .payment-actions .choice { border:1px solid #d4d9e0; background:#fff; color:#252a33; box-shadow:0 2px 5px #18212d0b; }
+      .payment-actions .primary:hover { transform:translateY(-1px); box-shadow:0 9px 18px #ff79004a; }
+      .payment-actions .choice:hover { background:#fff7ef; border-color:#ffb777; }
       .receipt-card {
         max-width: 680px;
         margin: 12px auto;
