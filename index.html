@@ -382,8 +382,13 @@
         min-width: 0;
       }
       .seat {
+        display:grid;
+        place-items:center;
         height: 31px;
         min-width: 0;
+        padding:0;
+        text-align:center;
+        line-height:1;
         background: #ff8a17;
         border-radius: 7px 7px 3px 3px;
         border-bottom: 4px solid #b85000;
@@ -805,7 +810,7 @@
           margin:0 auto;
         }
         /* Give the seat map extra room without affecting the other pages. */
-        #booking .bookgrid { margin-left:-10px; margin-right:-10px; }
+        #booking .bookgrid { margin-left:-18px; margin-right:-18px; }
         .screen { padding:8px 10px; font-size:14px; overflow:hidden; }
         .screen small { display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:11px; }
         .plan { margin:22px auto 20px; }
