@@ -89,7 +89,14 @@
       .mobile-toggle svg { color:#fff; }
       .mobile-toggle:focus { outline:2px solid #fff3; border-radius:8px; }
       @media (max-width: 760px) {
-        .mobile-toggle { display: inline-grid; }
+        .mobile-toggle {
+          display: inline-grid;
+          place-items: center;
+          width: 40px;
+          height: 40px;
+          border: 2px solid var(--o);
+          border-radius: 50%;
+        }
       }
       .mobile-menu { display:none; position:fixed; top:62px; left:8px; right:8px; z-index:70; background:#fff; border-radius:10px; box-shadow:0 18px 50px #0006; padding:8px; border:1px solid #e7e9ee; transform:translateY(-6px); opacity:0; }
       .mobile-menu button { display:block; width:100%; padding:12px 14px; text-align:left; background:transparent; border:0; font-weight:800; color:#222; border-radius:8px; }
