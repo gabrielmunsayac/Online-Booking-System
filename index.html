@@ -799,14 +799,23 @@
           grid-template-columns: repeat(2, 1fr);
         }
         .seatbox {
-          padding: 13px;
+          padding: 14px 12px 18px;
+        }
+        .screen { padding:8px 6px; font-size:14px; }
+        .screen small { font-size:11px; }
+        .plan { margin:22px auto 20px; }
+        .row {
+          grid-template-columns:20px minmax(0, 1fr) 18px minmax(0, 1fr);
+          gap:5px;
+          margin:7px 0;
         }
         .sets {
-          gap: 4px;
+          gap:3px;
         }
-        .row {
-          gap: 4px;
-        }
+        .seat { height:29px; border-radius:6px 6px 3px 3px; font-size:9px; }
+        .legend { display:flex; justify-content:center; align-items:center; flex-wrap:wrap; gap:7px; font-size:12px; }
+        .dot { margin:0 2px 0 0; width:12px; height:12px; }
+        .hint { max-width:230px; margin:18px auto 0; font-size:14px; line-height:1.35; }
         .hero {
           padding: 25px;
         }
