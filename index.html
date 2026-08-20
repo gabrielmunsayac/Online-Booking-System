@@ -60,6 +60,7 @@
         position: relative;
       }
       .logo {
+        cursor: pointer;
         color: #fff;
         display: grid;
         grid-template-columns: auto auto;
@@ -891,7 +892,7 @@
     <header>
       <div class="top">
         <nav>
-          <div class="logo">
+          <div class="logo" role="button" tabindex="0" aria-label="Go to now showing" onclick="go('home')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();go('home')}">
             <small>YOUR MOVIE EXPERIENCE</small><span>EAS</span><b>cinema</b>
           </div>
           <button class="mobile-toggle" id="mobileMenuBtn" onclick="event.stopPropagation(); toggleMobileMenu()" aria-label="Open menu" title="Menu">
