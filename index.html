@@ -521,6 +521,8 @@
         font-weight: 900;
         margin: 8px 0;
       }
+      .payment-actions { display:grid; gap:10px; margin-top:16px; }
+      .payment-actions button { width:100%; margin:0 !important; }
       .receipt-card {
         max-width: 680px;
         margin: 12px auto;
@@ -595,10 +597,15 @@
       @media (max-width: 600px) {
         .payment-body {
           grid-template-columns: 1fr;
+          gap:24px;
+          padding:24px 22px 28px;
         }
         .qr-wrap {
-          max-width: 240px;
+          order:-1;
+          max-width:260px;
           margin: auto;
+          padding:14px;
+          border-radius:14px;
         }
         .receipt-details {
           grid-template-columns: 1fr;
@@ -1424,7 +1431,7 @@
         const paymentData = encodeURIComponent(
           `EAScinema|${b.ref}|${b.name}|PHP ${b.total.toFixed(2)}`,
         );
-        booking.innerHTML = `<div class="box payment-card"><div class="payment-head"><div class="small">EAScinema secure checkout</div><h1>Complete your payment</h1><div>Scan the QR code with GCash, then enter your payment reference.</div></div><div class="payment-body"><div><div class="small">AMOUNT TO PAY</div><div class="payment-amount">₱${b.total.toFixed(2)}</div><p><b>${b.movie}</b><br>${b.date} • ${b.time}<br>Seats: ${b.seats.join(", ")}</p><div class="field"><label>GCash payment reference</label><input id="paymentReference" inputmode="numeric" placeholder="Enter 11-digit reference" maxlength="11"></div><button class="primary" style="width:100%" onclick="completePayment()">I HAVE COMPLETED PAYMENT</button><button class="choice" style="margin-top:10px" onclick="book()">Back to seat selection</button><div id="paymentMsg"></div></div><div class="qr-wrap"><img alt="GCash payment QR code" src="https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=${paymentData}"><b>GCash QR Payment</b><br><small>Reference: ${b.ref}</small></div></div></div>`;
+        booking.innerHTML = `<div class="box payment-card"><div class="payment-head"><div class="small">EAScinema secure checkout</div><h1>Complete your payment</h1><div>Scan the QR code with GCash, then enter your payment reference.</div></div><div class="payment-body"><div class="payment-details"><div class="small">AMOUNT TO PAY</div><div class="payment-amount">₱${b.total.toFixed(2)}</div><p><b>${b.movie}</b><br>${b.date} • ${b.time}<br>Seats: ${b.seats.join(", ")}</p><div class="field"><label>GCash payment reference</label><input id="paymentReference" inputmode="numeric" placeholder="Enter 11-digit reference" maxlength="11"></div><div class="payment-actions"><button class="primary" onclick="completePayment()">I HAVE COMPLETED PAYMENT</button><button class="choice" onclick="book()">Back to seat selection</button></div><div id="paymentMsg"></div></div><div class="qr-wrap"><img alt="GCash payment QR code" src="https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=${paymentData}"><b>GCash QR Payment</b><br><small>Reference: ${b.ref}</small></div></div></div>`;
         window.pendingBooking = b;
         configurePaymentMethod(b);
         go("booking");
